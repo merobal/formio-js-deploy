@@ -78,11 +78,9 @@ function (_Input) {
       (_this$validators = _this.validators).push.apply(_this$validators, validators);
     }
 
-    if (_this.widget) {
-      _this.component.checkDataValidity = function () {
-        return _this.checkValidity(_this.data, true);
-      };
-    }
+    _this.component.checkDataValidity = function () {
+      return _this.checkValidity(_this.data, true);
+    };
 
     return _this;
   }
@@ -98,12 +96,12 @@ function (_Input) {
     }
   }, {
     key: "setCustomValidity",
-    value: function setCustomValidity(message, dirty) {
+    value: function setCustomValidity(message, dirty, external) {
       if (this.widget && this.widget.toggleInvalidClassForWidget) {
         this.widget.toggleInvalidClassForWidget(message);
       }
 
-      return _get(_getPrototypeOf(WidgetComponent.prototype), "setCustomValidity", this).call(this, message, dirty);
+      return _get(_getPrototypeOf(WidgetComponent.prototype), "setCustomValidity", this).call(this, message, dirty, external);
     }
   }, {
     key: "setValue",
@@ -122,6 +120,15 @@ function (_Input) {
       }
 
       return _get(_getPrototypeOf(WidgetComponent.prototype), "checkValidity", this).call(this, data, dirty, rowData);
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      if (this.widget) {
+        this.widget.destroy();
+      }
+
+      _get(_getPrototypeOf(WidgetComponent.prototype), "destroy", this).call(this);
     }
   }, {
     key: "defaultSchema",

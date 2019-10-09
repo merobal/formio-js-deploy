@@ -6,7 +6,7 @@ var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<div class="panel panel-' +
 ((__t = (ctx.component.theme)) == null ? '' : __t) +
-'">\n  <div class="panel-heading">\n    <h4 class="mb-0 panel-title" ref="header">\n      ';
+'">\n  <div class="panel-heading" ref="header">\n    <h4 class="mb-0 panel-title">\n      ';
  if (ctx.component.collapsible) { ;
 __p += '\n        <i class="formio-collapse-icon ' +
 ((__t = (ctx.iconClass(ctx.collapsed ? 'plus' : 'minus'))) == null ? '' : __t) +

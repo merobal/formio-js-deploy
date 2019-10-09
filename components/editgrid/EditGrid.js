@@ -331,7 +331,7 @@ function (_NestedComponent) {
       var _this4 = this;
 
       var flags = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      return this.editRows.reduce(function (valid, editRow) {
+      return _get(_getPrototypeOf(EditGridComponent.prototype), "checkData", this).call(this, data, flags) && this.editRows.reduce(function (valid, editRow) {
         return _this4.checkRow(data, editRow, flags) && valid;
       }, true);
     }
@@ -442,13 +442,18 @@ function (_NestedComponent) {
       this.attachComponents(formComponents, this.editRows[rowIndex].components);
     }
   }, {
+    key: "setEditRowSettings",
+    value: function setEditRowSettings(editRow) {
+      editRow.dirty = false;
+      editRow.isOpen = true;
+      editRow.editing = true;
+    }
+  }, {
     key: "editRow",
     value: function editRow(rowIndex) {
       var dataValue = this.dataValue || [];
       var editRow = this.editRows[rowIndex];
-      editRow.dirty = false;
-      editRow.isOpen = true;
-      editRow.editing = true;
+      this.setEditRowSettings(editRow);
       var dataSnapshot = dataValue[rowIndex] ? _lodash.default.cloneDeep(dataValue[rowIndex]) : {};
 
       if (this.component.inlineEdit) {
@@ -530,8 +535,8 @@ function (_NestedComponent) {
 
       editRow.dirty = true;
 
-      if (!!this.validateRow(editRow) !== true) {
-        return;
+      if (!!this.validateRow(editRow, true) !== true) {
+        return false;
       }
 
       if (!this.component.inlineEdit) {
@@ -556,6 +561,7 @@ function (_NestedComponent) {
       this.triggerChange();
       this.checkValidity(this.data, true);
       this.redraw();
+      return true;
     }
   }, {
     key: "updateRowsComponents",
@@ -627,9 +633,9 @@ function (_NestedComponent) {
     key: "validateRow",
     value: function validateRow(editRow, dirty) {
       var valid = true;
+      var isDirty = dirty || !!editRow.dirty;
 
-      if (editRow.isOpen) {
-        var isDirty = dirty || !!editRow.dirty;
+      if (editRow.editing || isDirty) {
         editRow.components.forEach(function (comp) {
           comp.setPristine(!isDirty);
           valid &= comp.checkValidity(null, isDirty, editRow.data);
@@ -644,6 +650,7 @@ function (_NestedComponent) {
 
         if (valid.toString() !== 'true') {
           editRow.error = valid;
+          valid = false;
         } else {
           delete editRow.error;
         }

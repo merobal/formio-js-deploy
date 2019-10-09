@@ -138,9 +138,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var Camera;
-var webViewCamera = navigator.camera || Camera;
+var webViewCamera = navigator.camera || Camera; // canvas.toBlob polyfill.
 
-// canvas.toBlob polyfill.
 if (!HTMLCanvasElement.prototype.toBlob) {
   Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
     value: function value(callback, type, quality) {
@@ -365,7 +364,13 @@ function (_Field) {
           var fileInfo = _this4.dataValue[index];
 
           if (fileInfo && _this4.component.storage === 'url') {
-            _this4.options.formio.makeRequest('', fileInfo.url, 'delete');
+            var _fileService = _this4.fileService;
+
+            if (_fileService && typeof _fileService.deleteFile === 'function') {
+              _fileService.deleteFile(fileInfo);
+            } else {
+              _this4.options.formio.makeRequest('', fileInfo.url, 'delete');
+            }
           }
 
           event.preventDefault();

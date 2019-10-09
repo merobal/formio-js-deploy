@@ -209,6 +209,7 @@ function (_WidgetComponent) {
         type: 'textfield',
         mask: false,
         inputType: 'text',
+        inputFormat: 'plain',
         inputMask: '',
         tableView: true,
         validate: {

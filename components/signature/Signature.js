@@ -18,8 +18,6 @@ require("core-js/modules/es.object.to-string");
 
 require("core-js/modules/es.reflect.get");
 
-require("core-js/modules/es.reflect.set");
-
 require("core-js/modules/es.string.iterator");
 
 require("core-js/modules/web.dom-collections.iterator");
@@ -48,12 +46,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function set(target, property, value, receiver) { if (typeof Reflect !== "undefined" && Reflect.set) { set = Reflect.set; } else { set = function set(target, property, value, receiver) { var base = _superPropBase(target, property); var desc; if (base) { desc = Object.getOwnPropertyDescriptor(base, property); if (desc.set) { desc.set.call(receiver, value); return true; } else if (!desc.writable) { return false; } } desc = Object.getOwnPropertyDescriptor(receiver, property); if (desc) { if (!desc.writable) { return false; } desc.value = value; Object.defineProperty(receiver, property, desc); } else { _defineProperty(receiver, property, value); } return true; }; } return set(target, property, value, receiver); }
-
-function _set(target, property, value, receiver, isStrict) { var s = set(target, property, value, receiver || target); if (!s && isStrict) { throw new Error('failed to set property'); } return value; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
 
@@ -141,6 +133,27 @@ function (_Input) {
       }
     }
   }, {
+    key: "onDisabled",
+    value: function onDisabled() {
+      this.showCanvas(!_get(_getPrototypeOf(SignatureComponent.prototype), "disabled", this));
+
+      if (this.signaturePad) {
+        if (_get(_getPrototypeOf(SignatureComponent.prototype), "disabled", this)) {
+          this.signaturePad.off();
+
+          if (this.refs.refresh) {
+            this.refs.refresh.classList.add('disabled');
+          }
+        } else {
+          this.signaturePad.on();
+
+          if (this.refs.refresh) {
+            this.refs.refresh.classList.remove('disabled');
+          }
+        }
+      }
+    }
+  }, {
     key: "checkSize",
     value: function checkSize(force, scale) {
       if (force || this.refs.padBody.offsetWidth !== this.currentWidth) {
@@ -176,8 +189,9 @@ function (_Input) {
         signatureImage: 'single'
       });
 
-      var superAttach = _get(_getPrototypeOf(SignatureComponent.prototype), "attach", this).call(this, element); // Create the signature pad.
+      var superAttach = _get(_getPrototypeOf(SignatureComponent.prototype), "attach", this).call(this, element);
 
+      this.onDisabled(); // Create the signature pad.
 
       if (this.refs.canvas) {
         this.signaturePad = new _signature_pad.default(this.refs.canvas, {
@@ -268,29 +282,6 @@ function (_Input) {
     key: "className",
     get: function get() {
       return "".concat(_get(_getPrototypeOf(SignatureComponent.prototype), "className", this), " signature-pad");
-    }
-  }, {
-    key: "disabled",
-    set: function set(disabled) {
-      _set(_getPrototypeOf(SignatureComponent.prototype), "disabled", disabled, this, true);
-
-      this.showCanvas(!disabled);
-
-      if (this.signaturePad) {
-        if (disabled) {
-          this.signaturePad.off();
-
-          if (this.refs.refresh) {
-            this.refs.refresh.classList.add('disabled');
-          }
-        } else {
-          this.signaturePad.on();
-
-          if (this.refs.refresh) {
-            this.refs.refresh.classList.remove('disabled');
-          }
-        }
-      }
     }
   }], [{
     key: "schema",

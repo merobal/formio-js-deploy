@@ -71,7 +71,8 @@ function (_Component) {
         component: this.component,
         tag: this.component.tag,
         attrs: this.component.attrs || {},
-        content: this.content
+        content: this.content,
+        singleTags: this.singleTags
       }));
     }
   }, {
@@ -105,6 +106,11 @@ function (_Component) {
         data: this.rootValue,
         row: this.data
       }) : '';
+    }
+  }, {
+    key: "singleTags",
+    get: function get() {
+      return ['br', 'img', 'hr'];
     }
   }], [{
     key: "schema",

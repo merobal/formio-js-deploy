@@ -32,7 +32,13 @@ __p += '\n      <td ref="' +
 ((__t = (ctx.tableKey)) == null ? '' : __t) +
 '-' +
 ((__t = (ctx.rowIndex)) == null ? '' : __t) +
-'">' +
+'"';
+ if (ctx.cellClassName) { ;
+__p += ' class="' +
+((__t = (ctx.cellClassName)) == null ? '' : __t) +
+'"';
+ } ;
+__p += '>' +
 ((__t = (column)) == null ? '' : __t) +
 '</td>\n      ';
  }) ;

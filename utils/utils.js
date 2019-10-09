@@ -100,6 +100,7 @@ var _exportNames = {
   getContextComponents: true,
   sanitize: true,
   interpolate: true,
+  isInputComponent: true,
   jsonLogic: true,
   moment: true,
   Evaluator: true
@@ -148,6 +149,7 @@ exports.withSwitch = withSwitch;
 exports.observeOverload = observeOverload;
 exports.getContextComponents = getContextComponents;
 exports.sanitize = sanitize;
+exports.isInputComponent = isInputComponent;
 Object.defineProperty(exports, "jsonLogic", {
   enumerable: true,
   get: function get() {
@@ -982,7 +984,11 @@ function getNumberSeparators() {
 }
 
 function getNumberDecimalLimit(component) {
-  // Determine the decimal limit. Defaults to 20 but can be overridden by validate.step or decimalLimit settings.
+  if (_lodash.default.has(component, 'decimalLimit')) {
+    return _lodash.default.get(component, 'decimalLimit');
+  } // Determine the decimal limit. Defaults to 20 but can be overridden by validate.step or decimalLimit settings.
+
+
   var decimalLimit = 20;
 
   var step = _lodash.default.get(component, 'validate.step', 'any');
@@ -1306,4 +1312,26 @@ function sanitize(string, options) {
   }
 
   return _dompurify.default.sanitize(string, sanitizeOptions);
+}
+
+function isInputComponent(componentJson) {
+  if (componentJson.input === false || componentJson.input === true) {
+    return componentJson.input;
+  }
+
+  switch (componentJson.type) {
+    case 'htmlelement':
+    case 'content':
+    case 'columns':
+    case 'fieldset':
+    case 'panel':
+    case 'table':
+    case 'tabs':
+    case 'well':
+    case 'button':
+      return false;
+
+    default:
+      return true;
+  }
 }

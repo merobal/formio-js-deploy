@@ -117,6 +117,8 @@ var _tree = _interopRequireDefault(require("./tree"));
 
 var _partials = _interopRequireDefault(require("./tree/partials"));
 
+var _warning = _interopRequireDefault(require("./warning"));
+
 var _webform = _interopRequireDefault(require("./webform"));
 
 var _well = _interopRequireDefault(require("./well"));
@@ -196,6 +198,7 @@ var _default = _objectSpread({
   table: _table.default,
   tree: _tree.default
 }, _partials.default, {
+  warning: _warning.default,
   webform: _webform.default,
   well: _well.default,
   wizard: _wizard.default

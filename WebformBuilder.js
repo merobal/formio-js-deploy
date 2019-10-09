@@ -777,6 +777,8 @@ function (_Component) {
   }, {
     key: "onDrop",
     value: function onDrop(element, target, source, sibling) {
+      var _this6 = this;
+
       if (!target) {
         return;
       } // If you try to drop within itself.
@@ -847,34 +849,43 @@ function (_Component) {
       var index = _lodash.default.findIndex(_lodash.default.get(parent.schema, path), {
         key: info.key
       }) || 0;
-      this.emit('addComponent', info, parent, path, index, isNew);
 
       if (isNew && !this.options.noNewEdit) {
         this.editComponent(info, target, isNew);
       } // Only rebuild the parts needing to be rebuilt.
 
 
+      var rebuild;
+
       if (target !== source) {
         if (source.formioContainer && source.contains(target)) {
-          source.formioComponent.rebuild();
+          rebuild = source.formioComponent.rebuild();
         } else if (target.contains(source)) {
-          target.formioComponent.rebuild();
+          rebuild = target.formioComponent.rebuild();
         } else {
           if (source.formioContainer) {
-            source.formioComponent.rebuild();
+            rebuild = source.formioComponent.rebuild();
           }
 
-          target.formioComponent.rebuild();
+          rebuild = target.formioComponent.rebuild();
         }
       } else {
         // If they are the same, only rebuild one.
-        target.formioComponent.rebuild();
+        rebuild = target.formioComponent.rebuild();
       }
+
+      if (!rebuild) {
+        rebuild = _nativePromiseOnly.default.resolve();
+      }
+
+      return rebuild.then(function () {
+        _this6.emit('addComponent', info, parent, path, index, isNew);
+      });
     }
   }, {
     key: "setForm",
     value: function setForm(form) {
-      var _this6 = this;
+      var _this7 = this;
 
       //populate isEnabled for recaptcha form settings
       var isRecaptchaEnabled = false;
@@ -901,7 +912,7 @@ function (_Component) {
       this.emit('change', form);
       return _get(_getPrototypeOf(WebformBuilder.prototype), "setForm", this).call(this, form).then(function (retVal) {
         setTimeout(function () {
-          return _this6.builderHeight = _this6.refs.form.offsetHeight;
+          return _this7.builderHeight = _this7.refs.form.offsetHeight;
         }, 200);
         return retVal;
       });
@@ -967,7 +978,7 @@ function (_Component) {
   }, {
     key: "saveComponent",
     value: function saveComponent(component, parent, isNew) {
-      var _this7 = this;
+      var _this8 = this;
 
       this.editForm.detach();
       var parentContainer = parent ? parent.formioContainer : this.container;
@@ -984,9 +995,9 @@ function (_Component) {
         var rebuild = parentComponent.rebuild() || _nativePromiseOnly.default.resolve();
 
         return rebuild.then(function () {
-          _this7.emit('saveComponent', parentContainer[index], originalComponent, parentComponent.component, path, index, isNew);
+          _this8.emit('saveComponent', parentContainer[index], originalComponent, parentComponent.component, path, index, isNew);
 
-          _this7.emit('change', _this7.form);
+          _this8.emit('change', _this8.form);
         });
       }
 
@@ -995,7 +1006,7 @@ function (_Component) {
   }, {
     key: "editComponent",
     value: function editComponent(component, parent, isNew, isJsonEdit) {
-      var _this8 = this;
+      var _this9 = this;
 
       if (!component.key) {
         return;
@@ -1080,7 +1091,7 @@ function (_Component) {
             // Ensure this component has a key.
             if (isNew) {
               if (!event.data.keyModified) {
-                _this8.editForm.everyComponent(function (component) {
+                _this9.editForm.everyComponent(function (component) {
                   if (component.key === 'key' && component.parent.component.key === 'tabs') {
                     component.setValue(_lodash.default.camelCase(event.data.title || event.data.label || event.data.placeholder || event.data.type));
                     return false;
@@ -1088,69 +1099,69 @@ function (_Component) {
                 });
               }
 
-              if (_this8.form) {
+              if (_this9.form) {
                 // Set a unique key for this component.
-                _builder.default.uniquify(_this8.findNamespaceRoot(parent.formioComponent.component), event.data);
+                _builder.default.uniquify(_this9.findNamespaceRoot(parent.formioComponent.component), event.data);
               }
             }
           } // Update the component.
 
 
-          _this8.updateComponent(event.data.componentJson || event.data);
+          _this9.updateComponent(event.data.componentJson || event.data);
         }
       });
       this.addEventListener(this.componentEdit.querySelector('[ref="cancelButton"]'), 'click', function (event) {
         event.preventDefault();
 
-        _this8.editForm.detach();
+        _this9.editForm.detach();
 
-        _this8.emit('cancelComponent', component);
+        _this9.emit('cancelComponent', component);
 
-        _this8.dialog.close();
+        _this9.dialog.close();
       });
       this.addEventListener(this.componentEdit.querySelector('[ref="removeButton"]'), 'click', function (event) {
         event.preventDefault(); // Since we are already removing the component, don't trigger another remove.
 
         saved = true;
 
-        _this8.editForm.detach();
+        _this9.editForm.detach();
 
-        _this8.removeComponent(component, parent);
+        _this9.removeComponent(component, parent);
 
-        _this8.dialog.close();
+        _this9.dialog.close();
       });
       this.addEventListener(this.componentEdit.querySelector('[ref="saveButton"]'), 'click', function (event) {
         event.preventDefault();
 
-        if (!_this8.editForm.checkValidity(_this8.editForm.data, true)) {
-          _this8.editForm.setPristine(false);
+        if (!_this9.editForm.checkValidity(_this9.editForm.data, true)) {
+          _this9.editForm.setPristine(false);
 
-          _this8.editForm.showErrors();
+          _this9.editForm.showErrors();
 
           return false;
         }
 
         saved = true;
 
-        _this8.saveComponent(component, parent, isNew);
+        _this9.saveComponent(component, parent, isNew);
       });
       this.addEventListener(this.dialog, 'close', function () {
-        _this8.editForm.destroy();
+        _this9.editForm.destroy();
 
-        if (_this8.preview) {
-          _this8.preview.destroy();
+        if (_this9.preview) {
+          _this9.preview.destroy();
 
-          _this8.preview = null;
+          _this9.preview = null;
         }
 
         if (isNew && !saved) {
-          _this8.removeComponent(component, parent);
+          _this9.removeComponent(component, parent);
         } // Clean up.
 
 
-        _this8.removeEventListener(_this8.dialog, 'close');
+        _this9.removeEventListener(_this9.dialog, 'close');
 
-        _this8.dialog = null;
+        _this9.dialog = null;
       }); // Called when we edit a component.
 
       this.emit('editComponent', component);
@@ -1235,6 +1246,15 @@ function (_Component) {
       return component;
     }
   }, {
+    key: "destroy",
+    value: function destroy() {
+      if (this.webform.initialized) {
+        this.webform.destroy();
+      }
+
+      _get(_getPrototypeOf(WebformBuilder.prototype), "destroy", this).call(this);
+    }
+  }, {
     key: "ready",
     get: function get() {
       return this.webform.ready;
@@ -1274,10 +1294,11 @@ function (_Component) {
     set: function set(value) {
       if (!value.components) {
         value.components = [];
-      } // Ensure there is at least a submit button.
+      }
 
+      var isShowSubmitButton = !this.options.noDefaultSubmitButton && !value.components.length; // Ensure there is at least a submit button.
 
-      if (!value.components.length) {
+      if (isShowSubmitButton) {
         value.components.push({
           type: 'button',
           label: 'Submit',

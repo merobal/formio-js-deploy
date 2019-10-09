@@ -6,6 +6,8 @@ require("core-js/modules/es.symbol.description");
 
 require("core-js/modules/es.symbol.iterator");
 
+require("core-js/modules/es.array.find");
+
 require("core-js/modules/es.array.iterator");
 
 require("core-js/modules/es.array.join");
@@ -143,7 +145,14 @@ function (_Webform) {
         _this3.postMessage({
           name: 'form',
           data: _this3.form
-        }); // Submit the form if they click the submit button.
+        }); // Hide the submit button if the associated component is hidden
+
+
+        var submitButton = _this3.components.find(function (c) {
+          return c.element === _this3.refs.submitButton;
+        });
+
+        _this3.refs.submitButton.classList.toggle('hidden', !submitButton.visible); // Submit the form if they click the submit button.
 
 
         _this3.addEventListener(_this3.refs.submitButton, 'click', function () {

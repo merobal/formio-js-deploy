@@ -109,7 +109,7 @@ function (_Multivalue) {
     value: function renderElement(value, index) {
       var info = this.inputInfo;
       info.attr = info.attr || {};
-      info.attr.value = this.getValueAsString(value);
+      info.attr.value = this.getValueAsString(this.formatValue(this.parseValue(value)));
 
       if (this.isMultipleMasksField) {
         info.attr.class += ' formio-multiple-mask-input';
@@ -132,7 +132,7 @@ function (_Multivalue) {
         selectOptions: this.getMaskOptions() || []
       }) : this.renderTemplate('input', {
         input: info,
-        value: value,
+        value: this.formatValue(this.parseValue(value)),
         index: index
       });
     }
@@ -196,6 +196,16 @@ function (_Multivalue) {
       return changed;
     }
   }, {
+    key: "parseValue",
+    value: function parseValue(value) {
+      return value;
+    }
+  }, {
+    key: "formatValue",
+    value: function formatValue(value) {
+      return value;
+    }
+  }, {
     key: "attach",
     value: function attach(element) {
       this.loadRefs(element, {
@@ -211,7 +221,11 @@ function (_Multivalue) {
     value: function attachElement(element, index) {
       var _this2 = this;
 
-      _get(_getPrototypeOf(Input.prototype), "attachElement", this).call(this, element, index); // Attach the widget.
+      _get(_getPrototypeOf(Input.prototype), "attachElement", this).call(this, element, index);
+
+      if (this.widget) {
+        this.widget.destroy();
+      } // Attach the widget.
 
 
       element.widget = this.createWidget(index);

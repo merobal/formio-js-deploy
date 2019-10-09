@@ -6,7 +6,7 @@ var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  ctx.component.columns.forEach(function(column, index) { ;
-__p += '\n<div class="col\n    col-md-' +
+__p += '\n<div class="\n    col-md-' +
 ((__t = (column.width)) == null ? '' : __t) +
 '\n    col-md-offset-' +
 ((__t = (column.offset)) == null ? '' : __t) +

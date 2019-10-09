@@ -237,7 +237,15 @@ function (_Component) {
   }, {
     key: "getValueAsString",
     value: function getValueAsString(value) {
-      if (!Object.keys(value.data).length) {
+      if (!value) {
+        return 'No data provided';
+      }
+
+      if (!value.data && value._id) {
+        return value._id;
+      }
+
+      if (!value.data || !Object.keys(value.data).length) {
         return 'No data provided';
       }
 
@@ -269,7 +277,9 @@ function (_Component) {
       return _get(_getPrototypeOf(FormComponent.prototype), "attach", this).call(this, element).then(function () {
         return _this.loadSubForm().then(function () {
           // Intentionally do not return... for some reason it doesn't resolve.
-          _this.subForm.attach(element);
+          if (_this.subForm) {
+            _this.subForm.attach(element);
+          }
         });
       });
     }
@@ -405,6 +415,11 @@ function (_Component) {
 
 
       if (this.formObj && this.formObj.components && Array.isArray(this.formObj.components) && this.formObj.components.length) {
+        // Pass config down to sub forms.
+        if (this.root && this.root.form && this.root.form.config && !this.formObj.config) {
+          this.formObj.config = this.root.form.config;
+        }
+
         this.subFormReady = this.renderSubForm(this.formObj);
       } else if (this.formSrc) {
         this.subFormReady = new _Formio.default(this.formSrc).loadForm({
@@ -545,21 +560,11 @@ function (_Component) {
       var submission = this.dataValue; // This submission has already been submitted, so just return the reference data.
 
       if (submission && submission._id && submission.form) {
-        this.dataValue = this.shouldSubmit ? {
-          _id: submission._id,
-          form: submission.form
-        } : submission;
+        this.dataValue = submission;
         return _nativePromiseOnly.default.resolve(this.dataValue);
       }
 
       return this.submitSubForm(false).then(function (data) {
-        if (data._id) {
-          _this6.dataValue = {
-            _id: data._id,
-            form: data.form
-          };
-        }
-
         return _this6.dataValue;
       }).then(function () {
         return _get(_getPrototypeOf(FormComponent.prototype), "beforeSubmit", _this6).call(_this6);

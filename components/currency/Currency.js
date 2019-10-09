@@ -150,20 +150,20 @@ function (_NumberComponent) {
       });
     }
   }, {
-    key: "clearInput",
-    value: function clearInput(input) {
+    key: "parseValue",
+    value: function parseValue(value) {
       try {
         if (this.prefix) {
-          input = input.replace(this.prefix, '');
+          value = value.replace(this.prefix, '');
         }
 
         if (this.suffix) {
-          input = input.replace(this.suffix, '');
+          value = value.replace(this.suffix, '');
         }
       } catch (err) {// If value doesn't have a replace method, continue on as before.
       }
 
-      return _get(_getPrototypeOf(CurrencyComponent.prototype), "clearInput", this).call(this, input);
+      return _get(_getPrototypeOf(CurrencyComponent.prototype), "parseValue", this).call(this, value);
     }
   }, {
     key: "defaultSchema",

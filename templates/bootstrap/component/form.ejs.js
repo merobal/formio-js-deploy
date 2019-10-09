@@ -8,7 +8,7 @@ __p += '<div id="' +
 ((__t = (ctx.id)) == null ? '' : __t) +
 '" class="' +
 ((__t = (ctx.classes)) == null ? '' : __t) +
-' form-group"';
+'"';
  if (ctx.styles) { ;
 __p += ' styles="' +
 ((__t = (ctx.styles)) == null ? '' : __t) +

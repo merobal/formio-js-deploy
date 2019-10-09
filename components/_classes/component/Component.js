@@ -241,7 +241,12 @@ function (_Element) {
           /**
            * If the custom validation should remain private (only the backend will see it and execute it).
            */
-          customPrivate: false
+          customPrivate: false,
+
+          /**
+           * If this component should implement a strict date validation if the Calendar widget is implemented.
+           */
+          strictDateValidation: false
         },
 
         /**
@@ -1401,6 +1406,11 @@ function (_Element) {
         switch (action.type) {
           case 'property':
             FormioUtils.setActionProperty(newComponent, action, _this9.data, data, newComponent, result, _this9);
+
+            if (!_lodash.default.isEqual(_this9, newComponent)) {
+              changed = true;
+            }
+
             break;
 
           case 'value':
@@ -1431,6 +1441,31 @@ function (_Element) {
         return changed;
       }, false);
     }
+  }, {
+    key: "addInputWarning",
+    value: function addInputWarning(message, dirty, elements) {
+      var _this10 = this;
+
+      if (!message) {
+        return;
+      }
+
+      if (this.refs.messageContainer) {
+        this.setContent(this.refs.messageContainer, this.renderTemplate('warning', {
+          message: message
+        }));
+      }
+
+      elements.forEach(function (input) {
+        return _this10.addClass(_this10.performInputMapping(input), 'is-warning');
+      });
+
+      if (dirty && this.options.highlightErrors) {
+        this.addClass(this.element, 'alert alert-warning');
+      } else {
+        this.addClass(this.element, 'has-error');
+      }
+    }
     /**
      * Add a new input error to this element.
      *
@@ -1441,7 +1476,7 @@ function (_Element) {
   }, {
     key: "addInputError",
     value: function addInputError(message, dirty, elements) {
-      var _this10 = this;
+      var _this11 = this;
 
       if (!message) {
         return;
@@ -1455,7 +1490,7 @@ function (_Element) {
 
 
       elements.forEach(function (input) {
-        return _this10.addClass(_this10.performInputMapping(input), 'is-invalid');
+        return _this11.addClass(_this11.performInputMapping(input), 'is-invalid');
       });
 
       if (dirty && this.options.highlightErrors) {
@@ -1542,7 +1577,7 @@ function (_Element) {
   }, {
     key: "addQuill",
     value: function addQuill(element, settings, onChange) {
-      var _this11 = this;
+      var _this12 = this;
 
       settings = _lodash.default.isEmpty(settings) ? this.wysiwygDefault : settings; // Lazy load the quill css.
 
@@ -1561,22 +1596,22 @@ function (_Element) {
           return _nativePromiseOnly.default.reject();
         }
 
-        _this11.quill = new Quill(element, settings);
+        _this12.quill = new Quill(element, settings);
         /** This block of code adds the [source] capabilities.  See https://codepen.io/anon/pen/ZyEjrQ **/
 
         var txtArea = document.createElement('textarea');
         txtArea.setAttribute('class', 'quill-source-code');
 
-        _this11.quill.addContainer('ql-custom').appendChild(txtArea);
+        _this12.quill.addContainer('ql-custom').appendChild(txtArea);
 
         var qlSource = element.parentNode.querySelector('.ql-source');
 
         if (qlSource) {
-          _this11.addEventListener(qlSource, 'click', function (event) {
+          _this12.addEventListener(qlSource, 'click', function (event) {
             event.preventDefault();
 
             if (txtArea.style.display === 'inherit') {
-              _this11.quill.setContents(_this11.quill.clipboard.convert(txtArea.value));
+              _this12.quill.setContents(_this12.quill.clipboard.convert(txtArea.value));
             }
 
             txtArea.style.display = txtArea.style.display === 'none' ? 'inherit' : 'none';
@@ -1586,8 +1621,8 @@ function (_Element) {
         // Make sure to select cursor when they click on the element.
 
 
-        _this11.addEventListener(element, 'click', function () {
-          return _this11.quill.focus();
+        _this12.addEventListener(element, 'click', function () {
+          return _this12.quill.focus();
         }); // Allows users to skip toolbar items when tabbing though form
 
 
@@ -1597,12 +1632,12 @@ function (_Element) {
           elm[i].setAttribute('tabindex', '-1');
         }
 
-        _this11.quill.on('text-change', function () {
-          txtArea.value = _this11.quill.root.innerHTML;
+        _this12.quill.on('text-change', function () {
+          txtArea.value = _this12.quill.root.innerHTML;
           onChange(txtArea);
         });
 
-        return _this11.quill;
+        return _this12.quill;
       });
     }
   }, {
@@ -2113,7 +2148,9 @@ function (_Element) {
   }, {
     key: "setCustomValidity",
     value: function setCustomValidity(message, dirty, external) {
-      var _this12 = this;
+      var _this13 = this;
+
+      var isWarning = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
       if (message) {
         if (this.refs.messageContainer) {
@@ -2128,7 +2165,11 @@ function (_Element) {
         this.emit('componentError', this.error);
 
         if (this.refs.input) {
-          this.addInputError(message, dirty, this.refs.input);
+          if (isWarning) {
+            this.addInputWarning(message, dirty, this.refs.input);
+          } else {
+            this.addInputError(message, dirty, this.refs.input);
+          }
         }
       } else if (this.error && this.error.external === !!external) {
         if (this.refs.messageContainer) {
@@ -2139,11 +2180,15 @@ function (_Element) {
 
         if (this.refs.input) {
           this.refs.input.forEach(function (input) {
-            return _this12.removeClass(_this12.performInputMapping(input), 'is-invalid');
+            return _this13.removeClass(_this13.performInputMapping(input), 'is-invalid');
+          });
+          this.refs.input.forEach(function (input) {
+            return _this13.removeClass(_this13.performInputMapping(input), 'is-warning');
           });
         }
 
         this.removeClass(this.element, 'alert alert-danger');
+        this.removeClass(this.element, 'alert alert-warning');
         this.removeClass(this.element, 'has-error');
       }
 
@@ -2152,7 +2197,7 @@ function (_Element) {
       }
 
       this.refs.input.forEach(function (input) {
-        input = _this12.performInputMapping(input);
+        input = _this13.performInputMapping(input);
 
         if (typeof input.setCustomValidity === 'function') {
           input.setCustomValidity(message, dirty);
@@ -2162,14 +2207,14 @@ function (_Element) {
   }, {
     key: "shouldSkipValidation",
     value: function shouldSkipValidation(data, dirty, rowData) {
-      var _this13 = this;
+      var _this14 = this;
 
       var rules = [// Force valid if component is hidden.
       function () {
-        return !_this13.visible;
+        return !_this14.visible;
       }, // Force valid if component is conditionally hidden.
       function () {
-        return !_this13.checkCondition(rowData, data);
+        return !_this14.checkCondition(rowData, data);
       }];
       return rules.some(function (pred) {
         return pred();
@@ -2238,7 +2283,7 @@ function (_Element) {
   }, {
     key: "selectOptions",
     value: function selectOptions(select, tag, options, defaultValue) {
-      var _this14 = this;
+      var _this15 = this;
 
       _lodash.default.each(options, function (option) {
         var attrs = {
@@ -2249,9 +2294,9 @@ function (_Element) {
           attrs.selected = 'selected';
         }
 
-        var optionElement = _this14.ce('option', attrs);
+        var optionElement = _this15.ce('option', attrs);
 
-        optionElement.appendChild(_this14.text(option.label));
+        optionElement.appendChild(_this15.text(option.label));
         select.appendChild(optionElement);
       });
     }
@@ -2300,26 +2345,26 @@ function (_Element) {
   }, {
     key: "attachLogic",
     value: function attachLogic() {
-      var _this15 = this;
+      var _this16 = this;
 
       this.logic.forEach(function (logic) {
         if (logic.trigger.type === 'event') {
-          var event = _this15.interpolate(logic.trigger.event);
+          var event = _this16.interpolate(logic.trigger.event);
 
-          _this15.on(event, function () {
-            var newComponent = _lodash.default.cloneDeep(_this15.originalComponent);
+          _this16.on(event, function () {
+            var newComponent = _lodash.default.cloneDeep(_this16.originalComponent);
 
             for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
               args[_key3] = arguments[_key3];
             }
 
-            if (_this15.applyActions(logic.actions, args, _this15.data, newComponent)) {
+            if (_this16.applyActions(logic.actions, args, _this16.data, newComponent)) {
               // If component definition changed, replace it.
-              if (!_lodash.default.isEqual(_this15.component, newComponent)) {
-                _this15.component = newComponent;
+              if (!_lodash.default.isEqual(_this16.component, newComponent)) {
+                _this16.component = newComponent;
               }
 
-              _this15.redraw();
+              _this16.redraw();
             }
           }, true);
         }
@@ -2363,11 +2408,11 @@ function (_Element) {
   }, {
     key: "autofocus",
     value: function autofocus() {
-      var _this16 = this;
+      var _this17 = this;
 
       if (this.component.autofocus) {
         this.on('render', function () {
-          return _this16.focus();
+          return _this17.focus();
         }, true);
       }
     }

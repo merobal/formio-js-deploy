@@ -71,6 +71,8 @@ var _tab = _interopRequireDefault(require("./tab"));
 
 var _table = _interopRequireDefault(require("./table"));
 
+var _warning = _interopRequireDefault(require("./warning"));
+
 var _well = _interopRequireDefault(require("./well"));
 
 var _wizard = _interopRequireDefault(require("./wizard"));
@@ -148,6 +150,7 @@ var _default = {
   survey: _survey.default,
   tab: _tab.default,
   table: _table.default,
+  warning: _warning.default,
   well: _well.default,
   wizard: _wizard.default
 };

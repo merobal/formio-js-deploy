@@ -106,7 +106,24 @@ function (_NestedComponent) {
   }, {
     key: "className",
     get: function get() {
-      return "table-responsive ".concat(_get(_getPrototypeOf(TableComponent.prototype), "className", this));
+      var name = "table-responsive ".concat(_get(_getPrototypeOf(TableComponent.prototype), "className", this));
+
+      if (!this.component.bordered) {
+        name += ' no-top-border-table';
+      }
+
+      return name;
+    }
+  }, {
+    key: "cellClassName",
+    get: function get() {
+      var name = '';
+
+      if (this.component.cellAlignment) {
+        name = "cell-align-".concat(this.component.cellAlignment);
+      }
+
+      return name;
     }
   }, {
     key: "tableKey",
@@ -232,6 +249,7 @@ function (_NestedComponent) {
       var _this4 = this;
 
       return _get(_getPrototypeOf(TableComponent.prototype), "render", this).call(this, this.renderTemplate('table', {
+        cellClassName: this.cellClassName,
         tableKey: this.tableKey,
         tableComponents: this.table.map(function (row) {
           return row.map(function (column) {

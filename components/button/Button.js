@@ -194,7 +194,7 @@ function (_Field) {
 
       this.on('change', function (value) {
         _this.loading = false;
-        _this.disabled = _this.options.readOnly || _this.component.disableOnInvalid && !value.isValid;
+        _this.disabled = _this.shouldDisabled || _this.component.disableOnInvalid && !value.isValid;
 
         _this.setDisabled(_this.refs.button, _this.disabled);
 
@@ -213,7 +213,7 @@ function (_Field) {
       this.addEventListener(this.refs.button, 'click', this.onClick.bind(this));
 
       if (this.canDisable) {
-        this.disabled = this.options.readOnly || this.component.disabled;
+        this.disabled = this.shouldDisabled;
       }
 
       function getUrlParameter(name) {

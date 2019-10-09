@@ -17,9 +17,12 @@ __p += '\n    ' +
 '"\n  ';
  }) ;
 __p += '\n>' +
-((__t = (ctx.content)) == null ? '' : __t) +
-'</' +
+((__t = (ctx.content)) == null ? '' : __t);
+ if (!ctx.singleTags || ctx.singleTags.indexOf(ctx.tag) === -1) { ;
+__p += '</' +
 ((__t = (ctx.tag)) == null ? '' : __t) +
-'>\n';
+'>';
+ } ;
+__p += '\n';
 return __p
 }

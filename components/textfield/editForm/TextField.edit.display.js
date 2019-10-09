@@ -12,42 +12,15 @@ var _lodash = _interopRequireDefault(require("lodash"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _default = [{
-  weight: 400,
-  type: 'select',
-  input: true,
-  key: 'widget.type',
-  label: 'Widget',
-  placeholder: 'Select a widget',
-  tooltip: 'The widget is the display UI used to input the value of the field.',
-  defaultValue: 'input',
-  onChange: function onChange(context) {
-    context.data.widget = _lodash.default.pick(context.data.widget, 'type');
-  },
-  dataSrc: 'values',
-  data: {
-    values: [{
-      label: 'Input Field',
-      value: 'input'
-    }, {
-      label: 'Calendar Picker',
-      value: 'calendar'
-    }]
-  },
-  conditional: {
-    json: {
-      '===': [{
-        var: 'data.type'
-      }, 'textfield']
-    }
-  }
-}, {
   weight: 405,
   type: 'textarea',
   key: 'widget',
   label: 'Widget Settings',
+  refreshOn: 'wiget.type',
+  clearOnHide: false,
   // Deleted clearOnHide and refreshOn to make possible to change exist widget settings.
   calculateValue: function calculateValue(context) {
-    if (!context.instance.calculatedValue && _lodash.default.isEmpty(_lodash.default.omit(context.data.widget, 'type'))) {
+    if (_lodash.default.isEmpty(_lodash.default.omit(context.data.widget, 'type')) || _lodash.default.isEmpty(_lodash.default.omit(context.instance.calculatedValue, 'type'))) {
       var settings = {};
       var existWidget = context.instance._currentForm.options.editComponent.widget;
 
@@ -55,6 +28,8 @@ var _default = [{
         settings = _lodash.default.omit(context.instance._currentForm.options.editComponent.widget, 'language');
       } else if (context.data.widget && context.data.widget.type) {
         settings = _lodash.default.omit(_widgets.default[context.data.widget.type].defaultSettings, 'language');
+      } else if (context.data.widget && !context.data.widget.type) {
+        settings = _lodash.default.omit(_widgets.default['calendar'].defaultSettings, 'language');
       }
 
       if (settings) {

@@ -207,44 +207,46 @@ function (_Webform) {
       this.element = element;
       this.loadRefs(element, (_this$loadRefs = {}, _defineProperty(_this$loadRefs, this.wizardKey, 'single'), _defineProperty(_this$loadRefs, "".concat(this.wizardKey, "-cancel"), 'single'), _defineProperty(_this$loadRefs, "".concat(this.wizardKey, "-previous"), 'single'), _defineProperty(_this$loadRefs, "".concat(this.wizardKey, "-next"), 'single'), _defineProperty(_this$loadRefs, "".concat(this.wizardKey, "-submit"), 'single'), _defineProperty(_this$loadRefs, "".concat(this.wizardKey, "-link"), 'multiple'), _this$loadRefs));
       var promises = this.attachComponents(this.refs[this.wizardKey], [].concat(_toConsumableArray(this.globalComponents), _toConsumableArray(this.currentPage.components)));
-      [{
-        name: 'cancel',
-        method: 'cancel'
-      }, {
-        name: 'previous',
-        method: 'prevPage'
-      }, {
-        name: 'next',
-        method: 'nextPage'
-      }, {
-        name: 'submit',
-        method: 'submit'
-      }].forEach(function (button) {
-        var buttonElement = _this3.refs["".concat(_this3.wizardKey, "-").concat(button.name)];
 
-        if (!buttonElement) {
-          return;
-        }
+      var isClickable = _lodash.default.get(this.options, 'breadcrumbSettings.clickable', true);
 
-        _this3.addEventListener(buttonElement, 'click', function (event) {
-          event.preventDefault(); // Disable the button until done.
+      if (isClickable) {
+        [{
+          name: 'cancel',
+          method: 'cancel'
+        }, {
+          name: 'previous',
+          method: 'prevPage'
+        }, {
+          name: 'next',
+          method: 'nextPage'
+        }, {
+          name: 'submit',
+          method: 'submit'
+        }].forEach(function (button) {
+          var buttonElement = _this3.refs["".concat(_this3.wizardKey, "-").concat(button.name)];
 
-          buttonElement.setAttribute('disabled', 'disabled');
+          _this3.addEventListener(buttonElement, 'click', function (event) {
+            event.preventDefault(); // Disable the button until done.
 
-          _this3.setLoading(buttonElement, true); // Call the button method, then re-enable the button.
+            buttonElement.setAttribute('disabled', 'disabled');
+
+            _this3.setLoading(buttonElement, true); // Call the button method, then re-enable the button.
 
 
-          _this3[button.method]().then(function () {
-            buttonElement.removeAttribute('disabled');
+            _this3[button.method]().then(function () {
+              buttonElement.removeAttribute('disabled');
 
-            _this3.setLoading(buttonElement, false);
-          }).catch(function () {
-            buttonElement.removeAttribute('disabled');
+              _this3.setLoading(buttonElement, false);
+            }).catch(function () {
+              buttonElement.removeAttribute('disabled');
 
-            _this3.setLoading(buttonElement, false);
+              _this3.setLoading(buttonElement, false);
+            });
           });
         });
-      });
+      }
+
       this.refs["".concat(this.wizardKey, "-link")].forEach(function (link, index) {
         _this3.addEventListener(link, 'click', function (event) {
           _this3.emit('wizardNavigationClicked', _this3.pages[index]);

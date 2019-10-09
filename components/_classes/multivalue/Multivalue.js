@@ -181,15 +181,24 @@ function (_Field) {
             element.value = element.value.toLowerCase();
           }
 
-          element.selectionStart = selectionStart;
-          element.selectionEnd = selectionEnd;
-        }
+          if (element.selectionStart && element.selectionEnd) {
+            element.selectionStart = selectionStart;
+            element.selectionEnd = selectionEnd;
+          }
+        } // If a mask is present, delay the update to allow mask to update first.
 
-        setTimeout(function () {
+
+        if (element.mask) {
+          setTimeout(function () {
+            return _this2.updateValue(null, {
+              modified: true
+            }, index);
+          }, 1);
+        } else {
           return _this2.updateValue(null, {
             modified: true
           }, index);
-        }, 1);
+        }
       });
 
       if (!this.tryAttachMultipleMasksInput()) {

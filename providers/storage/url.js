@@ -139,6 +139,22 @@ var url = function url(formio) {
         return uploadRequest();
       }
     },
+    deleteFile: function deleteFile(fileInfo) {
+      return new _nativePromiseOnly.default(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', fileInfo.url, true);
+
+        xhr.onload = function () {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve('File deleted');
+          } else {
+            reject(xhr.response || 'Unable to delete file');
+          }
+        };
+
+        xhr.send(null);
+      });
+    },
     downloadFile: function downloadFile(file) {
       if (file.private) {
         if (formio.submissionId && file.data) {

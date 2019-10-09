@@ -195,8 +195,8 @@ function (_Input) {
       return val ? this.parseNumber(val) : val;
     }
   }, {
-    key: "clearInput",
-    value: function clearInput(input) {
+    key: "parseValue",
+    value: function parseValue(input) {
       var value = parseFloat(input);
 
       if (!_lodash.default.isNaN(value)) {
@@ -213,7 +213,7 @@ function (_Input) {
       if (this.component.requireDecimal && value && !value.includes(this.decimalSeparator)) {
         return "".concat(value).concat(this.decimalSeparator).concat(_lodash.default.repeat('0', this.decimalLimit));
       } else if (this.component.requireDecimal && value && value.includes(this.decimalSeparator)) {
-        return "".concat(value).concat(_lodash.default.repeat('0', this.decimalLimit - value.split(this.decimalSeparator)[1].length), ")}");
+        return "".concat(value).concat(_lodash.default.repeat('0', this.decimalLimit - value.split(this.decimalSeparator)[1].length));
       }
 
       return value;
@@ -221,7 +221,7 @@ function (_Input) {
   }, {
     key: "setValueAt",
     value: function setValueAt(index, value) {
-      return _get(_getPrototypeOf(NumberComponent.prototype), "setValueAt", this).call(this, index, this.formatValue(this.clearInput(value)));
+      return _get(_getPrototypeOf(NumberComponent.prototype), "setValueAt", this).call(this, index, this.formatValue(this.parseValue(value)));
     }
   }, {
     key: "focus",

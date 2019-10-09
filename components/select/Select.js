@@ -221,7 +221,7 @@ function (_Field) {
       var attrs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       var id = arguments.length > 3 ? arguments[3] : undefined;
       var option = {
-        value: value,
+        value: _lodash.default.isObject(value) ? value : String(value),
         label: label
       };
 
@@ -788,10 +788,10 @@ function (_Field) {
         searchEnabled: useSearch,
         searchChoices: !this.component.searchField,
         searchFields: _lodash.default.get(this, 'component.searchFields', ['label']),
-        fuseOptions: Object.assign({
+        fuseOptions: Object.assign({}, _lodash.default.get(this, 'component.fuseOptions', {}), {
           include: 'score',
           threshold: _lodash.default.get(this, 'component.searchThreshold', 0.3)
-        }, _lodash.default.get(this, 'component.fuseOptions', {})),
+        }),
         itemComparer: _lodash.default.isEqual,
         resetScrollPosition: false
       }, customOptions);
@@ -1283,7 +1283,7 @@ function (_Field) {
         if (this.refs.selectContainer) {
           this.addInputError(message, dirty, [this.refs.selectContainer]);
         }
-      } else if (this.error && this.error.external === external) {
+      } else if (this.error && this.error.external === !!external) {
         if (this.refs.messageContainer) {
           this.empty(this.refs.messageContainer);
         }
