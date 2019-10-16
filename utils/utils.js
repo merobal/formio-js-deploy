@@ -103,7 +103,8 @@ var _exportNames = {
   isInputComponent: true,
   jsonLogic: true,
   moment: true,
-  Evaluator: true
+  Evaluator: true,
+  BuilderUtils: true
 };
 exports.evaluate = evaluate;
 exports.getRandomComponentId = getRandomComponentId;
@@ -168,6 +169,12 @@ Object.defineProperty(exports, "Evaluator", {
     return _Evaluator.default;
   }
 });
+Object.defineProperty(exports, "BuilderUtils", {
+  enumerable: true,
+  get: function get() {
+    return _builder.default;
+  }
+});
 exports.interpolate = exports.firstNonNil = void 0;
 
 var _lodash = _interopRequireDefault(require("lodash"));
@@ -201,18 +208,7 @@ Object.keys(_formUtils).forEach(function (key) {
 
 var _Evaluator = _interopRequireDefault(require("./Evaluator"));
 
-var _builder = require("./builder");
-
-Object.keys(_builder).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _builder[key];
-    }
-  });
-});
+var _builder = _interopRequireDefault(require("./builder"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
