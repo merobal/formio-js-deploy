@@ -316,7 +316,7 @@ function (_Field) {
       if (this.refs.fileDrop) {
         var _element = this;
 
-        this.addEventListener(this.refs.fileDrop, 'dragOver', function (event) {
+        this.addEventListener(this.refs.fileDrop, 'dragover', function (event) {
           this.className = 'fileSelector fileDragOver';
           event.preventDefault();
         });

@@ -24,23 +24,19 @@ __p += '<th></th>';
  } ;
 __p += '\n      ';
  ctx.columns.forEach(function(col) { ;
-__p += '\n      ';
- if (ctx.visibleColumns[col.key]) { ;
-__p += '\n      <th class="' +
+__p += '\n        <th class="' +
 ((__t = (col.validate && col.validate.required ? 'field-required' : '')) == null ? '' : __t) +
-'">\n        ' +
+'">\n          ' +
 ((__t = ( col.hideLabel ? '' : ctx.t(col.label || col.title) )) == null ? '' : __t) +
-'\n        ';
+'\n          ';
  if (col.tooltip) { ;
 __p += ' <span data-tooltip="' +
 ((__t = (col.tooltip)) == null ? '' : __t) +
-'" data-position="right center">\n                    <i class="' +
+'" data-position="right center">\n                      <i class="' +
 ((__t = (ctx.iconClass('question-sign'))) == null ? '' : __t) +
-'"></i>\n          </span>';
+'"></i>\n            </span>';
  } ;
-__p += '\n      </th>\n      ';
- } ;
-__p += '\n      ';
+__p += '\n        </th>\n      ';
  }) ;
 __p += '\n      ';
  if (ctx.hasExtraColumn) { ;
@@ -84,15 +80,11 @@ __p += '\n        <td>\n          <button type="button" class="formio-drag-butto
  } ;
 __p += '\n      ';
  ctx.columns.forEach(function(col) { ;
-__p += '\n      ';
- if (ctx.visibleColumns[col.key]) { ;
-__p += '\n      <td ref="' +
+__p += '\n        <td ref="' +
 ((__t = (ctx.datagridKey)) == null ? '' : __t) +
-'">\n        ' +
+'">\n          ' +
 ((__t = (row[col.key])) == null ? '' : __t) +
-'\n      </td>\n      ';
- } ;
-__p += '\n      ';
+'\n        </td>\n      ';
  }) ;
 __p += '\n      ';
  if (ctx.hasExtraColumn) { ;

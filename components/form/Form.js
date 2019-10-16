@@ -181,7 +181,7 @@ function (_Component) {
       }
 
       if (this.options.buttonSettings) {
-        options.buttonSettings = this.options.buttonSettings;
+        options.buttonSettings = _lodash.default.clone(this.options.buttonSettings);
       }
 
       if (this.options.viewAsHtml) {
@@ -212,7 +212,10 @@ function (_Component) {
         options.iconset = this.options.iconset;
       }
 
-      options.events = this.createEmitter();
+      options.events = this.createEmitter(); // Make sure to not show the submit button in wizards in the nested forms.
+
+      _lodash.default.set(options, 'buttonSettings.showSubmit', false);
+
       return options;
     }
   }, {
@@ -275,12 +278,23 @@ function (_Component) {
       }
 
       return _get(_getPrototypeOf(FormComponent.prototype), "attach", this).call(this, element).then(function () {
-        return _this.loadSubForm().then(function () {
-          // Intentionally do not return... for some reason it doesn't resolve.
-          if (_this.subForm) {
-            _this.subForm.attach(element);
-          }
-        });
+        return _this.createSubForm();
+      }).then(function () {
+        _this.empty(element);
+
+        if (_this.options.builder) {
+          _this.setContent(element, _this.ce('div', {
+            class: 'text-muted text-center p-2'
+          }, _this.text(_this.formObj.title)));
+
+          return;
+        }
+
+        _this.setContent(element, _this.render());
+
+        if (_this.subForm) {
+          _this.subForm.attach(element);
+        }
       });
     }
   }, {
@@ -328,72 +342,59 @@ function (_Component) {
       }
     }
     /**
-     * Render a subform.
+     * Create a subform instance.
      *
-     * @param form
-     * @param options
+     * @return {*}
      */
 
   }, {
-    key: "renderSubForm",
-    value: function renderSubForm(form) {
+    key: "createSubForm",
+    value: function createSubForm() {
       var _this2 = this;
 
-      if (this.options.builder) {
-        this.element.appendChild(this.ce('div', {
-          class: 'text-muted text-center p-2'
-        }, this.text(form.title)));
-        return;
-      } // Iterate through every component and hide the submit button.
+      this.subFormReady = this.loadSubForm().then(function (form) {
+        if (!form) {
+          return;
+        } // Iterate through every component and hide the submit button.
 
 
-      (0, _utils.eachComponent)(form.components, function (component) {
-        if (component.type === 'button' && (component.action === 'submit' || !component.action)) {
-          component.hidden = true;
-        }
-      }); // Render the form.
-
-      return new _Form.default(form, this.getSubOptions()).ready.then(function (instance) {
-        _this2.subForm = instance;
-        _this2.subForm.currentForm = _this2;
-        _this2.subForm.parent = _this2;
-        _this2.subForm.parentVisible = _this2.visible;
-
-        _this2.subForm.on('change', function () {
-          if (_this2.subForm) {
-            _this2.dataValue = _this2.subForm.getValue();
-
-            _this2.triggerChange({
-              noEmit: true
-            });
+        (0, _utils.eachComponent)(form.components, function (component) {
+          if (component.type === 'button' && (component.action === 'submit' || !component.action)) {
+            component.hidden = true;
           }
+        }); // If the subform is already created then destroy the old one.
+
+        if (_this2.subForm) {
+          _this2.subForm.destroy();
+        } // Render the form.
+
+
+        return new _Form.default(form, _this2.getSubOptions()).ready.then(function (instance) {
+          _this2.subForm = instance;
+          _this2.subForm.currentForm = _this2;
+          _this2.subForm.parent = _this2;
+          _this2.subForm.parentVisible = _this2.visible;
+
+          _this2.subForm.on('change', function () {
+            if (_this2.subForm) {
+              _this2.dataValue = _this2.subForm.getValue();
+
+              _this2.triggerChange({
+                noEmit: true
+              });
+            }
+          });
+
+          _this2.subForm.url = _this2.formSrc;
+          _this2.subForm.nosubmit = true;
+          _this2.subForm.root = _this2.root;
+
+          _this2.restoreValue();
+
+          return _this2.subForm;
         });
-
-        _this2.subForm.url = _this2.formSrc;
-        _this2.subForm.nosubmit = _this2.nosubmit;
-
-        _this2.redraw();
-
-        _this2.subForm.root = _this2.root;
-        return _this2.subForm;
       });
-    }
-  }, {
-    key: "show",
-    value: function show() {
-      var _get2;
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      var state = (_get2 = _get(_getPrototypeOf(FormComponent.prototype), "show", this)).call.apply(_get2, [this].concat(args));
-
-      if (!this.subFormReady && state) {
-        this.loadSubForm();
-      }
-
-      return state;
+      return this.subFormReady;
     }
     /**
      * Load the subform.
@@ -406,11 +407,6 @@ function (_Component) {
 
       if (this.builderMode || this.isHidden()) {
         return _nativePromiseOnly.default.resolve();
-      } // Only load the subform if the subform isn't loaded and the conditions apply.
-
-
-      if (this.subFormReady) {
-        return this.subFormReady;
       } // Determine if we already have a loaded form object.
 
 
@@ -420,25 +416,19 @@ function (_Component) {
           this.formObj.config = this.root.form.config;
         }
 
-        this.subFormReady = this.renderSubForm(this.formObj);
+        return _nativePromiseOnly.default.resolve(this.formObj);
       } else if (this.formSrc) {
-        this.subFormReady = new _Formio.default(this.formSrc).loadForm({
+        return new _Formio.default(this.formSrc).loadForm({
           params: {
             live: 1
           }
         }).then(function (formObj) {
           _this3.formObj = formObj;
-          return _this3.renderSubForm(formObj);
+          return formObj;
         });
       }
 
-      if (!this.subFormReady) {
-        return new _nativePromiseOnly.default(function () {});
-      }
-
-      return this.subFormReady.then(function () {
-        return _this3.restoreValue();
-      });
+      return _nativePromiseOnly.default.resolve();
     }
   }, {
     key: "checkComponentValidity",
@@ -516,7 +506,12 @@ function (_Component) {
 
       // If we wish to submit the form on next page, then do that here.
       if (this.shouldSubmit) {
-        return this.loadSubForm().then(function () {
+        return this.createSubForm().then(function () {
+          if (!_this4.subForm) {
+            return _this4.dataValue;
+          }
+
+          _this4.subForm.nosubmit = false;
           return _this4.subForm.submitForm().then(function (result) {
             _this4.subForm.loading = false;
             _this4.dataValue = result.submission;
@@ -582,21 +577,16 @@ function (_Component) {
   }, {
     key: "setValue",
     value: function setValue(submission, flags) {
-      var _this7 = this;
-
       var changed = _get(_getPrototypeOf(FormComponent.prototype), "setValue", this).call(this, submission, flags);
 
-      if (this.subFormReady) {
-        this.subFormReady.then(function (form) {
-          if (submission && submission._id && form.formio && !flags.noload && (_lodash.default.isEmpty(submission.data) || _this7.shouldSubmit)) {
-            var submissionUrl = "".concat(form.formio.formsUrl, "/").concat(submission.form, "/submission/").concat(submission._id);
-            form.setUrl(submissionUrl, _this7.options);
-            form.nosubmit = false;
-            form.loadSubmission();
-          } else {
-            form.setValue(submission, flags);
-          }
-        });
+      if (this.subForm) {
+        if (submission && submission._id && this.subForm.formio && _lodash.default.isEmpty(submission.data)) {
+          var submissionUrl = "".concat(this.subForm.formio.formsUrl, "/").concat(submission.form, "/submission/").concat(submission._id);
+          this.subForm.setUrl(submissionUrl, this.options);
+          this.subForm.loadSubmission();
+        } else {
+          this.subForm.setValue(submission, flags);
+        }
       }
 
       return changed;
@@ -673,8 +663,8 @@ function (_Component) {
       emitter.emit = function (event) {
         var eventType = event.replace("".concat(that.options.namespace, "."), '');
 
-        for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-          args[_key2 - 1] = arguments[_key2];
+        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          args[_key - 1] = arguments[_key];
         }
 
         nativeEmit.call.apply(nativeEmit, [this, event].concat(args));
@@ -719,37 +709,12 @@ function (_Component) {
       return this.subFormReady || _nativePromiseOnly.default.resolve();
     }
   }, {
-    key: "root",
-    set: function set(inst) {
-      if (!inst) {
-        return;
-      }
-
-      this._root = inst;
-      this.nosubmit = inst.nosubmit;
-    },
-    get: function get() {
-      return this._root;
-    }
-  }, {
-    key: "nosubmit",
-    set: function set(value) {
-      this._nosubmit = !!value;
-
-      if (this.subForm) {
-        this.subForm.nosubmit = this._nosubmit;
-      }
-    },
-    get: function get() {
-      return this._nosubmit || false;
-    }
-  }, {
     key: "currentForm",
     get: function get() {
       return this._currentForm;
     },
     set: function set(instance) {
-      var _this8 = this;
+      var _this7 = this;
 
       this._currentForm = instance;
 
@@ -758,7 +723,7 @@ function (_Component) {
       }
 
       this.subForm.getComponents().forEach(function (component) {
-        component.currentForm = _this8;
+        component.currentForm = _this7;
       });
     }
   }, {
@@ -789,8 +754,8 @@ function (_Component) {
   }], [{
     key: "schema",
     value: function schema() {
-      for (var _len3 = arguments.length, extend = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        extend[_key3] = arguments[_key3];
+      for (var _len2 = arguments.length, extend = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        extend[_key2] = arguments[_key2];
       }
 
       return _Component2.default.schema.apply(_Component2.default, [{

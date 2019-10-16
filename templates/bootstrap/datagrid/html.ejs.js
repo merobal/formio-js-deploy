@@ -14,21 +14,17 @@ __p += '<table class="table datagrid-table table-bordered\n    ' +
  if (ctx.hasHeader) { ;
 __p += '\n  <thead>\n    <tr>\n      ';
  ctx.columns.forEach(function(col) { ;
-__p += '\n      ';
- if (ctx.visibleColumns[col.key]) { ;
-__p += '\n      <th class="' +
+__p += '\n        <th class="' +
 ((__t = (col.validate && col.validate.required ? 'field-required' : '')) == null ? '' : __t) +
-'">\n        ' +
+'">\n          ' +
 ((__t = ( col.hideLabel ? '' : ctx.t(col.label || col.title) )) == null ? '' : __t) +
-'\n        ';
+'\n          ';
  if (col.tooltip) { ;
 __p += ' <i ref="tooltip" class="' +
 ((__t = (ctx.iconClass('question-sign'))) == null ? '' : __t) +
 ' text-muted"></i>';
  } ;
-__p += '\n      </th>\n      ';
- } ;
-__p += '\n      ';
+__p += '\n        </th>\n      ';
  }) ;
 __p += '\n    </tr>\n  </thead>\n  ';
  } ;
@@ -36,15 +32,11 @@ __p += '\n  <tbody>\n    ';
  ctx.rows.forEach(function(row) { ;
 __p += '\n    <tr>\n      ';
  ctx.columns.forEach(function(col) { ;
-__p += '\n      ';
- if (ctx.visibleColumns[col.key]) { ;
-__p += '\n      <td ref="' +
+__p += '\n        <td ref="' +
 ((__t = (ctx.datagridKey)) == null ? '' : __t) +
-'">\n        ' +
+'">\n          ' +
 ((__t = (row[col.key])) == null ? '' : __t) +
-'\n      </td>\n      ';
- } ;
-__p += '\n      ';
+'\n        </td>\n      ';
  }) ;
 __p += '\n    </tr>\n    ';
  }) ;

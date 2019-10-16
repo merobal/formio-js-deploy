@@ -316,6 +316,8 @@ describe('Webform tests', function () {
         });
         return form.setForm(formTest.form).then(function () {
           formTestTest(form, function (error) {
+            form.destroy();
+
             if (error) {
               throw new Error(error);
             }

@@ -269,9 +269,10 @@ function () {
     value: function removeEventListener(obj, type) {
       var _this2 = this;
 
+      var func = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
       var indexes = [];
       this.eventHandlers.forEach(function (handler, index) {
-        if (handler.id === _this2.id && obj.removeEventListener && handler.type === type) {
+        if (handler.id === _this2.id && obj.removeEventListener && handler.type === type && (!func || handler.func === func)) {
           obj.removeEventListener(type, handler.func);
           indexes.push(index);
         }

@@ -11,7 +11,7 @@ __p += '<div class="formio builder ui grid formbuilder">\n  <div class="four wid
 __p += '\n        <div title="' +
 ((__t = (page.title)) == null ? '' : __t) +
 '" class="';
- if (pageIndex === ctx.self.currentPage) { ;
+ if (pageIndex === ctx.self.page) { ;
 __p += ' active section ';
  } else { ;
 __p += ' section ';

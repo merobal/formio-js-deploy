@@ -11,7 +11,7 @@ __p += '<div class="formio builder row formbuilder">\n  <div class="col-xs-4 col
 __p += '\n      <li>\n        <span title="' +
 ((__t = (page.title)) == null ? '' : __t) +
 '" class="mr-2 badge ';
- if (pageIndex === ctx.self.currentPage) { ;
+ if (pageIndex === ctx.self.page) { ;
 __p += 'badge-primary';
  } else { ;
 __p += 'badge-info';

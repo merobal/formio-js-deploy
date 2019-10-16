@@ -41,6 +41,8 @@ exports.default = void 0;
 
 var _WebformBuilder2 = _interopRequireDefault(require("./WebformBuilder"));
 
+var _Webform = _interopRequireDefault(require("./Webform"));
+
 var _lodash = _interopRequireDefault(require("lodash"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -277,7 +279,8 @@ function (_WebformBuilder) {
   }, {
     key: "currentPage",
     get: function get() {
-      return this.pages && this.pages.length >= this.page ? this.pages[this.page] : null;
+      var pages = this.pages;
+      return pages && pages.length >= this.page ? pages[this.page] : null;
     }
   }, {
     key: "form",
@@ -304,7 +307,11 @@ function (_WebformBuilder) {
   }, {
     key: "schema",
     get: function get() {
-      return this._form;
+      _lodash.default.assign(this._form.components[this.page], this.webform._form.components[0]);
+
+      var webform = new _Webform.default();
+      webform.form = this._form;
+      return webform.schema;
     }
   }]);
 

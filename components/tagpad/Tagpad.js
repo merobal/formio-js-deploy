@@ -684,7 +684,7 @@ function (_NestedComponent) {
       });
 
       if (dirty && this.options.highlightErrors) {
-        this.addClass(this.element, 'alert alert-danger');
+        this.addClass(this.element, 'formio-error-wrapper');
       }
     }
   }, {

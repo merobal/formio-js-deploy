@@ -256,7 +256,14 @@ function (_InputWidget) {
           } // Creates a date to prevent incorrect parsing of locations such as ru.
 
 
-          var correctDate = (0, _moment.default)(inputDate, (0, _calendarUtils.monthFormatCorrector)(_this3.settings.format)).toDate();
+          var correctDate = null;
+
+          if (format === _this3.settings.dateFormat) {
+            correctDate = (0, _moment.default)(inputDate).toDate();
+          } else {
+            correctDate = (0, _moment.default)(inputDate, (0, _calendarUtils.monthFormatCorrector)(_this3.settings.format)).toDate();
+          }
+
           return _flatpickr.default.parseDate(correctDate, format, currentLocale);
         }
 

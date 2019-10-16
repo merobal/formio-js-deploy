@@ -93,7 +93,7 @@ describe('EditGrid Component', function () {
 
       _harness.default.testInnerHtml(component, 'li.list-group-header div.row div:nth-child(3)', '0');
 
-      (0, _powerAssert.default)(!component.checkValidity(component.getValue()), 'Item should not be valid');
+      (0, _powerAssert.default)(!component.checkValidity(component.getValue(), true), 'Item should not be valid');
     });
   });
   it('Should save a new row when save is clicked', function () {
@@ -167,7 +167,7 @@ describe('EditGrid Component', function () {
 
       _powerAssert.default.equal(component.editRows.length, 2);
 
-      (0, _powerAssert.default)(component.checkData(component.getValue()), 'Item should be valid');
+      (0, _powerAssert.default)(component.checkValidity(component.getValue(), true), 'Item should be valid');
     });
   });
   it('Should delete a row when delete is clicked', function () {
@@ -197,7 +197,7 @@ describe('EditGrid Component', function () {
 
       _harness.default.testInnerHtml(component, 'li.list-group-item:nth-child(3) div.row div:nth-child(2)', 'baz');
 
-      (0, _powerAssert.default)(component.checkData(component.getValue()), 'Item should be valid');
+      (0, _powerAssert.default)(component.checkValidity(component.getValue(), true), 'Item should be valid');
     });
   });
   it('Should edit a row when edit is clicked', function () {
@@ -220,7 +220,7 @@ describe('EditGrid Component', function () {
 
       _harness.default.testElements(component, 'div.editgrid-actions button.btn-danger', 1);
 
-      (0, _powerAssert.default)(!component.checkData(component.getValue()), 'Item should not be valid');
+      (0, _powerAssert.default)(!component.checkValidity(component.getValue(), true), 'Item should not be valid');
     });
   });
   it('Should save a row when save is clicked', function () {
@@ -247,7 +247,7 @@ describe('EditGrid Component', function () {
 
       _harness.default.testInnerHtml(component, 'li.list-group-item:nth-child(3) div.row div:nth-child(2)', 'baz');
 
-      (0, _powerAssert.default)(component.checkData(component.getValue()), 'Item should be valid');
+      (0, _powerAssert.default)(component.checkValidity(component.getValue(), true), 'Item should be valid');
     });
   });
   it('Should cancel edit row when cancel is clicked', function () {
@@ -274,7 +274,7 @@ describe('EditGrid Component', function () {
 
       _harness.default.testInnerHtml(component, 'li.list-group-item:nth-child(3) div.row div:nth-child(2)', 'bar');
 
-      (0, _powerAssert.default)(component.checkData(component.getValue()), 'Item should be valid');
+      (0, _powerAssert.default)(component.checkValidity(component.getValue(), true), 'Item should be valid');
     });
   });
   it('Should show error messages for existing data in rows', function () {
@@ -294,7 +294,7 @@ describe('EditGrid Component', function () {
 
       _harness.default.testInnerHtml(component, 'li.list-group-item:nth-child(4) div.has-error div.editgrid-row-error', 'Must be good');
 
-      (0, _powerAssert.default)(!component.checkData(component.getValue()), 'Item should not be valid');
+      (0, _powerAssert.default)(!component.checkValidity(component.getValue(), true), 'Item should not be valid');
     });
   });
   it('Should not allow saving when errors exist', function () {
@@ -307,7 +307,7 @@ describe('EditGrid Component', function () {
 
       _harness.default.getInputValue(component, 'data[editgrid][0][field2]', '');
 
-      (0, _powerAssert.default)(!component.checkData(component.getValue()), 'Item should not be valid');
+      (0, _powerAssert.default)(!component.checkValidity(component.getValue(), true), 'Item should not be valid');
 
       _harness.default.setInputValue(component, 'data[editgrid][0][field2]', 'baz');
 
@@ -317,7 +317,7 @@ describe('EditGrid Component', function () {
 
       _harness.default.getInputValue(component, 'data[editgrid][0][field2]', 'baz');
 
-      (0, _powerAssert.default)(!component.checkData(component.getValue()), 'Item should not be valid');
+      (0, _powerAssert.default)(!component.checkValidity(component.getValue(), true), 'Item should not be valid');
 
       _harness.default.setInputValue(component, 'data[editgrid][0][field1]', 'bad');
 
@@ -327,13 +327,13 @@ describe('EditGrid Component', function () {
 
       _harness.default.getInputValue(component, 'data[editgrid][0][field2]', 'baz');
 
-      (0, _powerAssert.default)(!component.checkData(component.getValue()), 'Item should not be valid');
+      (0, _powerAssert.default)(!component.checkValidity(component.getValue(), true), 'Item should not be valid');
 
       _harness.default.setInputValue(component, 'data[editgrid][0][field1]', 'good');
 
       _harness.default.clickElement(component, 'div.editgrid-actions button.btn-primary');
 
-      (0, _powerAssert.default)(component.checkData(component.getValue()), 'Item should be valid');
+      (0, _powerAssert.default)(component.checkValidity(component.getValue(), true), 'Item should be valid');
 
       _harness.default.testInnerHtml(component, 'li.list-group-header div.row div:nth-child(3)', '1');
 

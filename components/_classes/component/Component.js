@@ -1461,7 +1461,7 @@ function (_Element) {
       });
 
       if (dirty && this.options.highlightErrors) {
-        this.addClass(this.element, 'alert alert-warning');
+        this.addClass(this.element, 'formio-error-wrapper');
       } else {
         this.addClass(this.element, 'has-error');
       }
@@ -1494,7 +1494,7 @@ function (_Element) {
       });
 
       if (dirty && this.options.highlightErrors) {
-        this.addClass(this.element, 'alert alert-danger');
+        this.addClass(this.element, 'formio-error-wrapper');
       } else {
         this.addClass(this.element, 'has-error');
       }
@@ -1961,43 +1961,18 @@ function (_Element) {
       // hidden and set to clearOnHide (Don't calculate a value for a hidden field set to clear when hidden)
       if (!this.component.calculateValue || (!this.visible || this.component.hidden) && this.component.clearOnHide && !this.rootPristine) {
         return false;
-      } // Get the dataValue.
+      } // Skip this operation if this component allows modification and it is no longer pristine.
 
 
-      var firstPass = false;
-      var dataValue = null;
-      var allowOverride = this.component.allowCalculateOverride;
-
-      if (allowOverride) {
-        dataValue = this.dataValue;
-      } // First pass, the calculatedValue is undefined.
-
-
-      if (this.calculatedValue === undefined) {
-        firstPass = true;
-        this.calculatedValue = null;
-      } // Check to ensure that the calculated value is different than the previously calculated value.
-
-
-      if (allowOverride && this.calculatedValue !== null && !_lodash.default.isEqual(dataValue, this.calculatedValue)) {
+      if (this.component.allowCalculateOverride && !this.pristine) {
         return false;
       } // Calculate the new value.
 
 
-      var calculatedValue = this.evaluate(this.component.calculateValue, {
-        value: this.defaultValue,
+      return this.setValue(this.evaluate(this.component.calculateValue, {
+        value: this.dataValue,
         data: data
-      }, 'value'); // If this is the firstPass, and the dataValue is different than to the calculatedValue.
-
-      if (allowOverride && firstPass && !this.isEmpty(dataValue) && !_lodash.default.isEqual(dataValue, calculatedValue)) {
-        // Return that we have a change so it will perform another pass.
-        this.calculatedValue = calculatedValue;
-        return true;
-      }
-
-      var changed = this.setValue(calculatedValue, flags);
-      this.calculatedValue = this.dataValue;
-      return changed;
+      }, 'value'), flags);
     }
     /**
      * Performs calculations in this component plus any child components.
@@ -2146,6 +2121,14 @@ function (_Element) {
       return this.component.multiple && Array.isArray(value);
     }
   }, {
+    key: "clearErrorClasses",
+    value: function clearErrorClasses() {
+      this.removeClass(this.element, 'formio-error-wrapper');
+      this.removeClass(this.element, 'alert alert-danger');
+      this.removeClass(this.element, 'alert alert-warning');
+      this.removeClass(this.element, 'has-error');
+    }
+  }, {
     key: "setCustomValidity",
     value: function setCustomValidity(message, dirty, external) {
       var _this13 = this;
@@ -2187,9 +2170,7 @@ function (_Element) {
           });
         }
 
-        this.removeClass(this.element, 'alert alert-danger');
-        this.removeClass(this.element, 'alert alert-warning');
-        this.removeClass(this.element, 'has-error');
+        this.clearErrorClasses();
       }
 
       if (!this.refs.input) {

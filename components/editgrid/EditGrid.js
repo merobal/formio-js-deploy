@@ -313,7 +313,7 @@ function (_NestedComponent) {
         var flattenedComponents = this.flattenComponents(rowIndex);
         var rowTemplate = _utils.Evaluator.noeval ? _templates.default.row : _lodash.default.get(this.component, 'templates.row', EditGridComponent.defaultRowTemplate);
         return this.renderString(rowTemplate, {
-          row: dataValue[rowIndex],
+          row: dataValue[rowIndex] || {},
           data: this.data,
           rowIndex: rowIndex,
           components: this.component.components,
@@ -331,8 +331,11 @@ function (_NestedComponent) {
       var _this4 = this;
 
       var flags = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      return _get(_getPrototypeOf(EditGridComponent.prototype), "checkData", this).call(this, data, flags) && this.editRows.reduce(function (valid, editRow) {
-        return _this4.checkRow(data, editRow, flags) && valid;
+
+      _Component.default.prototype.checkData.call(this, data, flags);
+
+      return this.editRows.reduce(function (valid, editRow, index) {
+        return _this4.checkRow(data[index], editRow, flags) && valid;
       }, true);
     }
   }, {
@@ -489,6 +492,7 @@ function (_NestedComponent) {
       if (this.options.readOnly) {
         editRow.dirty = false;
         editRow.isOpen = false;
+        editRow.editing = false;
         this.redraw();
         return;
       }
@@ -663,6 +667,11 @@ function (_NestedComponent) {
       return !!valid;
     }
   }, {
+    key: "checkValidity",
+    value: function checkValidity(data, dirty) {
+      return this.checkComponentValidity(data, dirty);
+    }
+  }, {
     key: "checkComponentValidity",
     value: function checkComponentValidity(data, dirty) {
       var _this7 = this;
@@ -673,20 +682,20 @@ function (_NestedComponent) {
       }
 
       var rowsValid = true;
-      var rowsClosed = true;
+      var rowsEditing = false;
       this.editRows.forEach(function (editRow) {
         // Trigger all errors on the row.
         var rowValid = _this7.validateRow(editRow, dirty);
 
-        rowsValid &= rowValid; // Any open rows causes validation to fail.
+        rowsValid &= rowValid; // If this is a dirty check, and any rows are still editing, we need to throw validation error.
 
-        rowsClosed &= !editRow.isOpen;
+        rowsEditing |= dirty && (editRow.editing || editRow.isOpen);
       });
 
       if (!rowsValid) {
         this.setCustomValidity('Please correct rows before proceeding.', dirty);
         return false;
-      } else if (!rowsClosed && !this.component.inlineEdit) {
+      } else if (rowsEditing && !this.component.inlineEdit) {
         this.setCustomValidity('Please save all rows before proceeding.', dirty);
         return false;
       }

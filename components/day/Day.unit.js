@@ -26,44 +26,44 @@ describe('Day Component', function () {
 
       component.refs.year.value = 2017;
       component.setSelectValue(component.refs.month, '1');
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
 
       _powerAssert.default.equal(component.refs.day.max, '31');
 
       component.setSelectValue(component.refs.month, '2');
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
 
       _powerAssert.default.equal(component.refs.day.max, '28');
 
       component.setSelectValue(component.refs.month, '3');
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
 
       _powerAssert.default.equal(component.refs.day.max, '31');
 
       component.setSelectValue(component.refs.month, '4');
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
 
       _powerAssert.default.equal(component.refs.day.max, '30'); // Set to a leap year.
 
 
       component.refs.year.value = 2020;
       component.setSelectValue(component.refs.month, '1');
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
 
       _powerAssert.default.equal(component.refs.day.max, '31');
 
       component.setSelectValue(component.refs.month, '2');
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
 
       _powerAssert.default.equal(component.refs.day.max, '29');
 
       component.setSelectValue(component.refs.month, '3');
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
 
       _powerAssert.default.equal(component.refs.day.max, '31');
 
       component.setSelectValue(component.refs.month, '4');
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
 
       _powerAssert.default.equal(component.refs.day.max, '30');
 
@@ -146,7 +146,7 @@ describe('Day Component', function () {
         done();
       });
       component.refs.month.value = 2;
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
     });
   });
   it('Should adjust day value when day is great then maxDay of month', function (done) {
@@ -161,7 +161,7 @@ describe('Day Component', function () {
         done();
       });
       component.refs.month.value = 2;
-      component.refs.month.dispatchEvent(new Event('change'));
+      component.refs.month.dispatchEvent(new Event('input'));
     });
   });
   it('Should validate required fields', function (done) {

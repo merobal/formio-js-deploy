@@ -476,9 +476,9 @@ function (_Component) {
       var _this2 = this;
 
       _lodash.default.each(resources, function (resource, index) {
-        var resourceKey = resource.name;
+        var resourceKey = "resource-".concat(resource.name);
         var subgroup = {
-          key: resource.name,
+          key: resourceKey,
           title: resource.title,
           components: [],
           componentOrder: [],
@@ -538,6 +538,11 @@ function (_Component) {
      * @returns {Promise} - Wait for webform to be ready.
      */
 
+  }, {
+    key: "redraw",
+    value: function redraw() {
+      return _Webform.default.prototype.redraw.call(this);
+    }
   }, {
     key: "findNamespaceRoot",
 
@@ -734,7 +739,12 @@ function (_Component) {
 
       if (this.schemas.hasOwnProperty(key)) {
         info = _lodash.default.cloneDeep(this.schemas[key]);
-        info.key = _lodash.default.camelCase(info.title || info.label || info.placeholder || info.type);
+      } else if (this.groups.hasOwnProperty(group)) {
+        var groupComponents = this.groups[group].components;
+
+        if (groupComponents.hasOwnProperty(key)) {
+          info = _lodash.default.cloneDeep(groupComponents[key].schema);
+        }
       } else {
         // This is an existing resource field.
         var resourceGroups = this.groups.resource.subgroups;
@@ -744,8 +754,12 @@ function (_Component) {
         });
 
         if (resourceGroup && resourceGroup.components.hasOwnProperty(key)) {
-          info = resourceGroup.components[key].schema;
+          info = _lodash.default.cloneDeep(resourceGroup.components[key].schema);
         }
+      }
+
+      if (info) {
+        info.key = _lodash.default.camelCase(info.title || info.label || info.placeholder || info.type);
       }
 
       return info;
@@ -949,7 +963,7 @@ function (_Component) {
       // Update the preview.
       if (this.preview) {
         this.preview.form = {
-          components: [_lodash.default.omit(component, ['hidden', 'calculatedValue'])]
+          components: [_lodash.default.omit(component, ['hidden', 'conditional', 'calculatedValue'])]
         };
         var previewElement = this.componentEdit.querySelector('[ref="preview"]');
 
@@ -961,7 +975,7 @@ function (_Component) {
 
 
       if (this.defaultValueComponent) {
-        _lodash.default.assign(this.defaultValueComponent.component, _lodash.default.omit(component, ['key', 'label', 'placeholder', 'tooltip', 'validate', 'disabled', 'calculatedValue']));
+        _lodash.default.assign(this.defaultValueComponent.component, _lodash.default.omit(component, ['key', 'label', 'placeholder', 'tooltip', 'validate', 'disabled', 'defaultValue', 'customDefaultValue', 'calculateValue']));
       } // Called when we update a component.
 
 
@@ -1145,7 +1159,8 @@ function (_Component) {
 
         _this9.saveComponent(component, parent, isNew);
       });
-      this.addEventListener(this.dialog, 'close', function () {
+
+      var dialogClose = function dialogClose() {
         _this9.editForm.destroy();
 
         if (_this9.preview) {
@@ -1159,10 +1174,12 @@ function (_Component) {
         } // Clean up.
 
 
-        _this9.removeEventListener(_this9.dialog, 'close');
+        _this9.removeEventListener(_this9.dialog, 'close', dialogClose);
 
         _this9.dialog = null;
-      }); // Called when we edit a component.
+      };
+
+      this.addEventListener(this.dialog, 'close', dialogClose); // Called when we edit a component.
 
       this.emit('editComponent', component);
     }
@@ -1253,6 +1270,25 @@ function (_Component) {
       }
 
       _get(_getPrototypeOf(WebformBuilder.prototype), "destroy", this).call(this);
+    }
+  }, {
+    key: "addBuilderGroup",
+    value: function addBuilderGroup(name, group) {
+      if (!this.groups[name]) {
+        this.groups[name] = group;
+        this.groupOrder.push(name);
+        this.triggerRedraw();
+      } else {
+        this.updateBuilderGroup(name, group);
+      }
+    }
+  }, {
+    key: "updateBuilderGroup",
+    value: function updateBuilderGroup(name, group) {
+      if (this.groups[name]) {
+        this.groups[name] = group;
+        this.triggerRedraw();
+      }
     }
   }, {
     key: "ready",

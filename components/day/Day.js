@@ -199,14 +199,14 @@ function (_Field) {
 
       var superAttach = _get(_getPrototypeOf(DayComponent.prototype), "attach", this).call(this, element);
 
-      this.addEventListener(this.refs.day, 'change', function () {
+      this.addEventListener(this.refs.day, 'input', function () {
         return _this2.updateValue(null, {
           modified: true
         });
       }); // TODO: Need to rework this to work with day select as well.
       // Change day max input when month changes.
 
-      this.addEventListener(this.refs.month, 'change', function () {
+      this.addEventListener(this.refs.month, 'input', function () {
         var maxDay = parseInt(new Date(_this2.refs.year.value, _this2.refs.month.value, 0).getDate(), 10);
 
         var day = _this2.getFieldValue('day');
@@ -221,7 +221,7 @@ function (_Field) {
           modified: true
         });
       });
-      this.addEventListener(this.refs.year, 'change', function () {
+      this.addEventListener(this.refs.year, 'input', function () {
         return _this2.updateValue(null, {
           modified: true
         });
@@ -306,20 +306,21 @@ function (_Field) {
   }, {
     key: "getFieldValue",
     value: function getFieldValue(name) {
+      var parts = this.dataValue.split('/');
       var val = 0;
 
-      if (!this.refs[name]) {
-        return val;
-      }
+      switch (name) {
+        case 'month':
+          val = parts[this.dayFirst ? 1 : 0];
+          break;
 
-      if (this.component.fields[name].type === 'number') {
-        val = this.refs[name].value;
-      } else if (this.component.fields[name].type === 'select') {
-        var selectedIndex = this.refs[name].selectedIndex;
+        case 'day':
+          val = parts[this.dayFirst ? 0 : 1];
+          break;
 
-        if (selectedIndex !== -1) {
-          val = this.refs[name].options[selectedIndex].value;
-        }
+        case 'year':
+          val = parts[2];
+          break;
       }
 
       val = parseInt(val, 10);
@@ -522,7 +523,7 @@ function (_Field) {
 
       info.type = 'input';
       info.attr.type = 'hidden';
-      info.changeEvent = 'change';
+      info.changeEvent = 'input';
       return info;
     }
   }, {
@@ -690,7 +691,7 @@ function (_Field) {
   }, {
     key: "validationValue",
     get: function get() {
-      return this.date;
+      return this.dataValue;
     }
   }], [{
     key: "schema",

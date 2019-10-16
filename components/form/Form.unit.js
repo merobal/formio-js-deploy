@@ -107,33 +107,6 @@ describe('Form Component', function () {
       }, done).catch(done);
     });
   });
-  describe('set/get nosubmit', function () {
-    it('should set/get nosubmit flag', function (done) {
-      _harness.default.testCreate(_Form.default, _fixtures.comp1).then(function (formcmp) {
-        formcmp.nosubmit = false;
-        (0, _chai.expect)(formcmp.nosubmit).to.be.false;
-        formcmp.nosubmit = true;
-        (0, _chai.expect)(formcmp.nosubmit).to.be.true;
-        formcmp.nosubmit = false;
-        (0, _chai.expect)(formcmp.nosubmit).to.be.false;
-        done();
-      }, done).catch(done);
-    });
-    it('should set nosubmit flag on subForm', function (done) {
-      _harness.default.testCreate(_Form.default, _fixtures.comp1).then(function (formcmp) {
-        var fakeSubForm = {};
-        formcmp.subForm = fakeSubForm;
-        formcmp.nosubmit = false;
-        (0, _chai.expect)(formcmp.subForm).to.have.property('nosubmit');
-        (0, _chai.expect)(formcmp.subForm.nosubmit).to.be.false;
-        formcmp.nosubmit = true;
-        (0, _chai.expect)(formcmp.subForm.nosubmit).to.be.true;
-        formcmp.nosubmit = false;
-        (0, _chai.expect)(formcmp.subForm.nosubmit).to.be.false;
-        done();
-      }, done).catch(done);
-    });
-  });
 });
 describe('Wizard Component', function () {
   it('Should build a wizard component and disable cancel, next and breadcrumbs', function (done) {

@@ -90,7 +90,7 @@ var url = function url(formio) {
 
 
       if (options) {
-        var parsedOptions = JSON.parse(options);
+        var parsedOptions = typeof options === 'string' ? JSON.parse(options) : options;
 
         for (var prop in parsedOptions) {
           xhr[prop] = parsedOptions[prop];

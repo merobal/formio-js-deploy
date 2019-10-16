@@ -701,14 +701,11 @@ function (_NestedComponent) {
       var _this7 = this;
 
       return this.onSubmission = this.formReady.then(function () {
-        // If nothing changed, still trigger an update.
         _this7.submissionSet = true;
 
-        if (!_this7.setValue(submission, flags)) {
-          _this7.triggerChange();
-        } else {
-          _this7.redraw();
-        }
+        _this7.setValue(submission, flags);
+
+        _this7.triggerChange();
 
         return _this7.submissionReadyResolve(submission);
       }, function (err) {
