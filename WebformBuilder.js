@@ -952,11 +952,8 @@ function (_Component) {
       if (remove && index !== -1) {
         var path = this.getComponentsPath(component, parent.formioComponent.component);
         parent.formioContainer.splice(index, 1);
-        var rebuild = parent.formioComponent.rebuild();
 
-        if (!rebuild) {
-          rebuild = _nativePromiseOnly.default.resolve();
-        }
+        var rebuild = parent.formioComponent.rebuild() || _nativePromiseOnly.default.resolve();
 
         rebuild.then(function () {
           _this8.emit('removeComponent', component, parent.formioComponent.component, path, index);
