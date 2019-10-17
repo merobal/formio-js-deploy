@@ -918,7 +918,7 @@ function (_Field) {
       } // Force the disabled state with getters and setters.
 
 
-      this.disabled = this.disabled;
+      this.disabled = this.shouldDisabled;
       this.triggerUpdate();
       return superAttach;
     }
@@ -1349,6 +1349,11 @@ function (_Field) {
     key: "isInfiniteScrollProvided",
     get: function get() {
       return this.isSelectResource || this.isSelectURL;
+    }
+  }, {
+    key: "shouldDisabled",
+    get: function get() {
+      return _get(_getPrototypeOf(SelectComponent.prototype), "shouldDisabled", this) || this.parentDisabled;
     }
   }, {
     key: "requestHeaders",

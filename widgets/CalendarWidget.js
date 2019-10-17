@@ -6,15 +6,9 @@ require("core-js/modules/es.symbol.description");
 
 require("core-js/modules/es.symbol.iterator");
 
-require("core-js/modules/es.array.fill");
-
 require("core-js/modules/es.array.iterator");
 
-require("core-js/modules/es.array.join");
-
 require("core-js/modules/es.array.map");
-
-require("core-js/modules/es.array.slice");
 
 require("core-js/modules/es.object.get-own-property-descriptor");
 
@@ -26,13 +20,7 @@ require("core-js/modules/es.reflect.get");
 
 require("core-js/modules/es.reflect.set");
 
-require("core-js/modules/es.regexp.constructor");
-
-require("core-js/modules/es.regexp.to-string");
-
 require("core-js/modules/es.string.iterator");
-
-require("core-js/modules/es.string.match");
 
 require("core-js/modules/es.string.replace");
 
@@ -52,8 +40,6 @@ var _utils = require("../utils/utils");
 var _moment = _interopRequireDefault(require("moment"));
 
 var _lodash = _interopRequireDefault(require("lodash"));
-
-var _calendarUtils = require("../utils/calendarUtils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -143,14 +129,6 @@ function (_InputWidget) {
       _this.settings.format = _this.settings.format.replace(/hh:mm a$/g, 'HH:mm');
     }
 
-    _this.component.suffix = '';
-    var is24hours = _this.widgetLocale.currentLocale.time_24hr;
-    _this.settings.format = (0, _calendarUtils.timeFormatLocaleCorrector)(is24hours, _this.settings.format);
-    /*eslint-disable camelcase*/
-
-    _this.settings.time_24hr = is24hours;
-    /*eslint-enable camelcase*/
-
     return _this;
   }
   /**
@@ -194,9 +172,7 @@ function (_InputWidget) {
         date: dateFormatInfo.dayFirst ? 'd/m/Y ' : 'm/d/Y ',
         time: 'G:i K'
       };
-      var currentLocale = this.widgetLocale.currentLocale;
       this.closedOn = 0;
-      this.settings.locale = currentLocale;
       this.valueFormat = this.settings.dateFormat || ISO_8601_FORMAT;
       this.valueMomentFormat = (0, _utils.convertFormatToMoment)(this.valueFormat);
       this.settings.minDate = (0, _utils.getDateSetting)(this.settings.minDate);
@@ -215,63 +191,19 @@ function (_InputWidget) {
         if (_this3.calendar) {
           _this3.emit('blur');
         }
-      }; // Removes console errors from Flatpickr.
-
-
-      this.settings.errorHandler = function () {
-        return null;
       };
 
       this.settings.formatDate = function (date, format) {
         // Only format this if this is the altFormat and the form is readOnly.
         if (_this3.settings.readOnly && format === _this3.settings.altFormat) {
           if (_this3.settings.saveAs === 'text' || _this3.loadZones()) {
-            return _flatpickr.default.formatDate(date, format, currentLocale);
+            return _flatpickr.default.formatDate(date, format);
           }
 
-          return (0, _utils.formatOffset)(_flatpickr.default.formatDate.bind(_flatpickr.default), date, format, _this3.timezone, currentLocale);
+          return (0, _utils.formatOffset)(_flatpickr.default.formatDate.bind(_flatpickr.default), date, format, _this3.timezone);
         }
 
-        return _flatpickr.default.formatDate(date, format, currentLocale);
-      }; // Extension of the parseDate method for validating input data.
-
-
-      this.settings.parseDate = function (inputDate, format) {
-        _this3.enteredDate = inputDate;
-
-        if (_this3.calendar) {
-          _this3.calendar.clear();
-        } // Check for validation errors.
-
-
-        if (_this3.component.checkDataValidity()) {
-          _this3.enteredDate = ''; // Solving the problem with parsing dates with MMM or MMMM format.
-
-          if (!inputDate.match(/[a-zа-яё\u00C0-\u017F]{3,}/gi)) {
-            if (format.indexOf('M') !== -1) {
-              format = format.replace('M', 'm');
-            } else if (format.indexOf('F') !== -1) {
-              format = format.replace('F', 'm');
-            }
-          } // Creates a date to prevent incorrect parsing of locations such as ru.
-
-
-          var correctDate = null;
-
-          if (format === _this3.settings.dateFormat) {
-            correctDate = (0, _moment.default)(inputDate).toDate();
-          } else {
-            correctDate = (0, _moment.default)(inputDate, (0, _calendarUtils.monthFormatCorrector)(_this3.settings.format)).toDate();
-          }
-
-          return _flatpickr.default.parseDate(correctDate, format, currentLocale);
-        }
-
-        if (_this3.calendar) {
-          _this3.calendar.close();
-        }
-
-        return undefined;
+        return _flatpickr.default.formatDate(date, format);
       };
 
       if (this._input) {
@@ -282,41 +214,7 @@ function (_InputWidget) {
 
         this.addEventListener(this.calendar._input, 'blur', function () {
           return _this3.calendar.setDate(_this3.calendar._input.value, true, _this3.settings.altFormat);
-        }); // Makes it possible to enter the month as text.
-
-        if (this.settings.format.match(/\bM{3}\b/gi)) {
-          this.addEventListener(this.calendar._input, 'keyup', function (e) {
-            var format = _this3.settings.format;
-            var value = e.target.value;
-            var monthIndex = format.indexOf('M');
-
-            if (value && value[monthIndex].match(/\d/)) {
-              format = format.replace('MMM', 'MM');
-            } else if (value && value[monthIndex].match(/[a-zа-яё\u00C0-\u017F]/i)) {
-              var month = value.match(/([a-zа-яё\u00C0-\u017F]{2,})/gi);
-
-              if (month) {
-                var monthsShort = _this3.widgetLocale.monthsShort;
-                var monthLength = (0, _calendarUtils.dynamicMonthLength)(month[0], monthsShort);
-
-                if (monthLength) {
-                  // Sets the dynamic length of the mask for the month.
-                  format = format.replace(/M{3,}/g, _lodash.default.fill(Array(monthLength), 'M').join(''));
-                }
-              }
-
-              format = format.replace(/M/g, 'e');
-            }
-
-            if (_this3.inputMasks[0]) {
-              _this3.inputMasks[0].destroy();
-
-              _this3.inputMasks = [];
-            }
-
-            _this3.setInputMask(_this3.calendar._input, (0, _utils.convertFormatToMask)(format));
-          });
-        }
+        });
       }
 
       return superAttach;
@@ -428,25 +326,6 @@ function (_InputWidget) {
       }
     }
   }, {
-    key: "toggleInvalidClassForWidget",
-    value: function toggleInvalidClassForWidget(message) {
-      if (this.calendar && this.calendar._input) {
-        var inputClasses = this._input.classList;
-        var calendarInputClasses = this.calendar._input.classList;
-        var invalidClass = 'is-invalid';
-
-        if (message && !calendarInputClasses.contains(invalidClass)) {
-          this.calendar._input.classList.add(invalidClass);
-        } else {
-          if (inputClasses.contains(invalidClass) && !calendarInputClasses.contains(invalidClass)) {
-            this.calendar._input.classList.add(invalidClass);
-          } else if (!inputClasses.contains(invalidClass) && calendarInputClasses.contains(invalidClass)) {
-            this.calendar._input.classList.remove(invalidClass);
-          }
-        }
-      }
-    }
-  }, {
     key: "timezone",
     get: function get() {
       if (this.settings.timezone) {
@@ -520,51 +399,6 @@ function (_InputWidget) {
     get: function get() {
       var defaultDate = (0, _utils.getDateSetting)(this.settings.defaultValue);
       return defaultDate ? defaultDate.toISOString() : '';
-    }
-  }, {
-    key: "widgetLocale",
-    get: function get() {
-      var currentLocale = _flatpickr.default.l10ns.default;
-      var loc = this.i18next.language ? this.i18next.language.slice(-2) : null;
-
-      if (this.settings.useLocaleSettings) {
-        if (!_flatpickr.default.l10ns[loc]) {
-          console.warn("Flatpickr localization ".concat(loc, " not found."));
-        } else {
-          currentLocale = _flatpickr.default.l10ns[loc];
-        }
-
-        if (!_moment.default.locales().some(function (locale) {
-          return locale === loc;
-        })) {
-          console.warn("Moment localization ".concat(loc, " not found."));
-        }
-      } else {
-        loc !== 'en' && (loc = 'en');
-      }
-
-      var monthsShort = currentLocale.months.shorthand;
-      var monthsShortStrictRegex = new RegExp("^(".concat(monthsShort.join('|'), ")"), 'i');
-      return {
-        locale: loc,
-        monthsShort: monthsShort,
-        monthsShortStrictRegex: monthsShortStrictRegex,
-        currentLocale: currentLocale
-      };
-    }
-  }, {
-    key: "widgetData",
-    get: function get() {
-      var _this$settings = this.settings,
-          format = _this$settings.format,
-          minDate = _this$settings.minDate,
-          maxDate = _this$settings.maxDate;
-      return {
-        enteredDate: this.enteredDate,
-        format: format,
-        minDate: minDate,
-        maxDate: maxDate
-      };
     }
   }]);
 

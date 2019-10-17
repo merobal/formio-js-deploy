@@ -696,6 +696,11 @@ function (_NestedComponent) {
       Object.getOwnPropertyDescriptor(_NestedComponent2.default.prototype, 'disabled').set.call(this, disabled);
     }
   }, {
+    key: "allowData",
+    get: function get() {
+      return true;
+    }
+  }, {
     key: "dataReady",
     get: function get() {
       return this.backgroundReady.promise;

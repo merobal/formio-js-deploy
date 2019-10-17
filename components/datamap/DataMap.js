@@ -89,7 +89,10 @@ function (_DataGridComponent) {
     get: function get() {
       var schema = _get(_getPrototypeOf(DataMapComponent.prototype), "schema", this);
 
-      schema.valueComponent = this.components[this.components.length - 1].schema;
+      if (this.components && this.components.length > 0) {
+        schema.valueComponent = this.components[this.components.length - 1].schema;
+      }
+
       return _lodash.default.omit(schema, 'components');
     }
   }], [{

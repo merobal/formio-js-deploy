@@ -5,7 +5,7 @@ exports.default=function(ctx) {
 var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<div class="ui grid">\n  <div class="eight wide column">\n    <h3 class="lead">' +
-((__t = (ctx.componentInfo.title)) == null ? '' : __t) +
+((__t = (ctx.t(ctx.componentInfo.title))) == null ? '' : __t) +
 ' ' +
 ((__t = (ctx.t('Component'))) == null ? '' : __t) +
 '</h3>\n  </div>\n  <div class="eight wide column">\n    <div class="right floated" style="margin-right: 20px; margin-top: 10px">\n      <a href="' +

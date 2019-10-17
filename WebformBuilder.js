@@ -934,6 +934,8 @@ function (_Component) {
   }, {
     key: "removeComponent",
     value: function removeComponent(component, parent) {
+      var _this8 = this;
+
       if (!parent) {
         return;
       }
@@ -949,10 +951,18 @@ function (_Component) {
 
       if (remove && index !== -1) {
         var path = this.getComponentsPath(component, parent.formioComponent.component);
-        this.emit('removeComponent', component, parent.formioComponent.component, path, index);
         parent.formioContainer.splice(index, 1);
-        parent.formioComponent.rebuild();
-        this.emit('change', this.form);
+        var rebuild = parent.formioComponent.rebuild();
+
+        if (!rebuild) {
+          rebuild = _nativePromiseOnly.default.resolve();
+        }
+
+        rebuild.then(function () {
+          _this8.emit('removeComponent', component, parent.formioComponent.component, path, index);
+
+          _this8.emit('change', _this8.form);
+        });
       }
 
       return remove;
@@ -992,7 +1002,7 @@ function (_Component) {
   }, {
     key: "saveComponent",
     value: function saveComponent(component, parent, isNew) {
-      var _this8 = this;
+      var _this9 = this;
 
       this.editForm.detach();
       var parentContainer = parent ? parent.formioContainer : this.container;
@@ -1009,9 +1019,9 @@ function (_Component) {
         var rebuild = parentComponent.rebuild() || _nativePromiseOnly.default.resolve();
 
         return rebuild.then(function () {
-          _this8.emit('saveComponent', parentContainer[index], originalComponent, parentComponent.component, path, index, isNew);
+          _this9.emit('saveComponent', parentContainer[index], originalComponent, parentComponent.component, path, index, isNew);
 
-          _this8.emit('change', _this8.form);
+          _this9.emit('change', _this9.form);
         });
       }
 
@@ -1020,7 +1030,7 @@ function (_Component) {
   }, {
     key: "editComponent",
     value: function editComponent(component, parent, isNew, isJsonEdit) {
-      var _this9 = this;
+      var _this10 = this;
 
       if (!component.key) {
         return;
@@ -1105,7 +1115,7 @@ function (_Component) {
             // Ensure this component has a key.
             if (isNew) {
               if (!event.data.keyModified) {
-                _this9.editForm.everyComponent(function (component) {
+                _this10.editForm.everyComponent(function (component) {
                   if (component.key === 'key' && component.parent.component.key === 'tabs') {
                     component.setValue(_lodash.default.camelCase(event.data.title || event.data.label || event.data.placeholder || event.data.type));
                     return false;
@@ -1113,70 +1123,70 @@ function (_Component) {
                 });
               }
 
-              if (_this9.form) {
+              if (_this10.form) {
                 // Set a unique key for this component.
-                _builder.default.uniquify(_this9.findNamespaceRoot(parent.formioComponent.component), event.data);
+                _builder.default.uniquify(_this10.findNamespaceRoot(parent.formioComponent.component), event.data);
               }
             }
           } // Update the component.
 
 
-          _this9.updateComponent(event.data.componentJson || event.data);
+          _this10.updateComponent(event.data.componentJson || event.data);
         }
       });
       this.addEventListener(this.componentEdit.querySelector('[ref="cancelButton"]'), 'click', function (event) {
         event.preventDefault();
 
-        _this9.editForm.detach();
+        _this10.editForm.detach();
 
-        _this9.emit('cancelComponent', component);
+        _this10.emit('cancelComponent', component);
 
-        _this9.dialog.close();
+        _this10.dialog.close();
       });
       this.addEventListener(this.componentEdit.querySelector('[ref="removeButton"]'), 'click', function (event) {
         event.preventDefault(); // Since we are already removing the component, don't trigger another remove.
 
         saved = true;
 
-        _this9.editForm.detach();
+        _this10.editForm.detach();
 
-        _this9.removeComponent(component, parent);
+        _this10.removeComponent(component, parent);
 
-        _this9.dialog.close();
+        _this10.dialog.close();
       });
       this.addEventListener(this.componentEdit.querySelector('[ref="saveButton"]'), 'click', function (event) {
         event.preventDefault();
 
-        if (!_this9.editForm.checkValidity(_this9.editForm.data, true)) {
-          _this9.editForm.setPristine(false);
+        if (!_this10.editForm.checkValidity(_this10.editForm.data, true)) {
+          _this10.editForm.setPristine(false);
 
-          _this9.editForm.showErrors();
+          _this10.editForm.showErrors();
 
           return false;
         }
 
         saved = true;
 
-        _this9.saveComponent(component, parent, isNew);
+        _this10.saveComponent(component, parent, isNew);
       });
 
       var dialogClose = function dialogClose() {
-        _this9.editForm.destroy();
+        _this10.editForm.destroy();
 
-        if (_this9.preview) {
-          _this9.preview.destroy();
+        if (_this10.preview) {
+          _this10.preview.destroy();
 
-          _this9.preview = null;
+          _this10.preview = null;
         }
 
         if (isNew && !saved) {
-          _this9.removeComponent(component, parent);
+          _this10.removeComponent(component, parent);
         } // Clean up.
 
 
-        _this9.removeEventListener(_this9.dialog, 'close', dialogClose);
+        _this10.removeEventListener(_this10.dialog, 'close', dialogClose);
 
-        _this9.dialog = null;
+        _this10.dialog = null;
       };
 
       this.addEventListener(this.dialog, 'close', dialogClose); // Called when we edit a component.

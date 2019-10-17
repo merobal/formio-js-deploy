@@ -474,7 +474,7 @@ function (_Element) {
     if (_this.component) {
       _this.type = _this.component.type;
 
-      if (_this.hasInput && _this.key) {
+      if (_this.allowData && _this.key) {
         _this.options.name += "[".concat(_this.key, "]"); // If component is visible or not set to clear on hide, set the default value.
 
         if (_this.visible || !_this.component.clearOnHide) {
@@ -2441,6 +2441,11 @@ function (_Element) {
     key: "isInputComponent",
     get: function get() {
       return !this.component.hasOwnProperty('input') || this.component.input;
+    }
+  }, {
+    key: "allowData",
+    get: function get() {
+      return this.hasInput;
     }
   }, {
     key: "hasInput",

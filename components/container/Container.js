@@ -169,6 +169,11 @@ function (_NestedComponent) {
       return 'container';
     }
   }, {
+    key: "allowData",
+    get: function get() {
+      return true;
+    }
+  }, {
     key: "data",
     get: function get() {
       return this._data;

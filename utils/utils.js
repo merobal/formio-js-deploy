@@ -840,13 +840,13 @@ function formatDate(value, format, timezone) {
  */
 
 
-function formatOffset(formatFn, date, format, timezone, locale) {
+function formatOffset(formatFn, date, format, timezone) {
   if (timezone === currentTimezone()) {
-    return formatFn(date, format, locale);
+    return formatFn(date, format);
   }
 
   if (timezone === 'UTC') {
-    return "".concat(formatFn(offsetDate(date, 'UTC').date, format, locale), " UTC");
+    return "".concat(formatFn(offsetDate(date, 'UTC').date, format), " UTC");
   } // Load the zones since we need timezone information.
 
 
@@ -940,12 +940,7 @@ function getInputMask(mask) {
 
       case '*':
         maskArray.numeric = false;
-        maskArray.push(/[a-zA-Zа-яА-ЯёЁ0-9\u00C0-\u017F]/);
-        break;
-
-      case 'Q':
-        maskArray.numeric = false;
-        maskArray.push(/[a-zа-яё\u00C0-\u017F]/i);
+        maskArray.push(/[a-zA-Z0-9]/);
         break;
 
       default:

@@ -103,6 +103,11 @@ function (_NestedComponent) {
       return _lodash.default.get(this.component, 'validate.minLength', 0);
     }
   }, {
+    key: "allowData",
+    get: function get() {
+      return true;
+    }
+  }, {
     key: "data",
     get: function get() {
       return this._data;

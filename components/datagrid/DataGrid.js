@@ -405,6 +405,7 @@ function (_NestedComponent) {
       dataValue.splice(movedBelow ? oldPosition : oldPosition + 1, 1); //need to re-build rows to re-calculate indexes and other indexed fields for component instance (like rows for ex.)
 
       this.setValue(dataValue);
+      this.redraw();
     }
   }, {
     key: "addRow",
@@ -704,6 +705,11 @@ function (_NestedComponent) {
       _lodash.default.each(this.refs.chunks[index], function (row) {
         row.classList.toggle('hidden');
       });
+    }
+  }, {
+    key: "allowData",
+    get: function get() {
+      return true;
     }
   }, {
     key: "dataValue",

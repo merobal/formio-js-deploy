@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = _default;
 
-var _WidgetComponent = _interopRequireDefault(require("../_classes/widgetcomponent/WidgetComponent.form"));
+var _Component = _interopRequireDefault(require("../_classes/component/Component.form"));
 
 var _DateTimeEdit = _interopRequireDefault(require("./editForm/DateTime.edit.data"));
 
@@ -24,7 +24,7 @@ function _default() {
     extend[_key] = arguments[_key];
   }
 
-  return _WidgetComponent.default.apply(void 0, [[{
+  return _Component.default.apply(void 0, [[{
     key: 'display',
     components: _DateTimeEdit3.default
   }, {

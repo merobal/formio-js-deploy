@@ -35,7 +35,7 @@ exports.default = void 0;
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
-var _WidgetComponent2 = _interopRequireDefault(require("../_classes/widgetcomponent/WidgetComponent"));
+var _Input2 = _interopRequireDefault(require("../_classes/input/Input"));
 
 var _vanillaTextMask = require("vanilla-text-mask");
 
@@ -71,8 +71,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 var TextFieldComponent =
 /*#__PURE__*/
-function (_WidgetComponent) {
-  _inherits(TextFieldComponent, _WidgetComponent);
+function (_Input) {
+  _inherits(TextFieldComponent, _Input);
 
   function TextFieldComponent() {
     _classCallCheck(this, TextFieldComponent);
@@ -196,6 +196,11 @@ function (_WidgetComponent) {
       info.changeEvent = 'input';
       return info;
     }
+  }, {
+    key: "emptyValue",
+    get: function get() {
+      return '';
+    }
   }], [{
     key: "schema",
     value: function schema() {
@@ -203,7 +208,7 @@ function (_WidgetComponent) {
         extend[_key] = arguments[_key];
       }
 
-      return _WidgetComponent2.default.schema.apply(_WidgetComponent2.default, [{
+      return _Input2.default.schema.apply(_Input2.default, [{
         label: 'Text Field',
         key: 'textField',
         type: 'textfield',
@@ -234,6 +239,6 @@ function (_WidgetComponent) {
   }]);
 
   return TextFieldComponent;
-}(_WidgetComponent2.default);
+}(_Input2.default);
 
 exports.default = TextFieldComponent;

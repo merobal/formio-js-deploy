@@ -26,6 +26,8 @@ require("core-js/modules/es.reflect.get");
 
 require("core-js/modules/es.string.iterator");
 
+require("core-js/modules/es.string.trim");
+
 require("core-js/modules/web.dom-collections.iterator");
 
 Object.defineProperty(exports, "__esModule", {
@@ -117,12 +119,16 @@ function (_Multivalue) {
 
 
       if (this.component.widget && this.component.widget.type === 'calendar') {
-        this.component.suffix = this.renderTemplate('icon', {
+        var calendarIcon = this.renderTemplate('icon', {
           ref: 'icon',
           className: this.iconClass(this.component.enableDate || this.component.widget.enableDate ? 'calendar' : 'time'),
           styles: '',
           content: ''
-        });
+        }).trim();
+
+        if (this.component.prefix !== calendarIcon) {
+          this.component.suffix = calendarIcon;
+        }
       }
 
       return this.isMultipleMasksField ? this.renderTemplate('multipleMasksInput', {

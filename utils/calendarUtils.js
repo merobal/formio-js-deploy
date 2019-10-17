@@ -2,8 +2,6 @@
 
 require("core-js/modules/es.array.concat");
 
-require("core-js/modules/es.array.find");
-
 require("core-js/modules/es.array.find-index");
 
 require("core-js/modules/es.array.join");
@@ -20,25 +18,16 @@ require("core-js/modules/es.string.replace");
 
 require("core-js/modules/es.string.split");
 
-require("core-js/modules/es.string.starts-with");
-
-require("core-js/modules/es.string.trim");
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.lessOrGreater = lessOrGreater;
 exports.checkInvalidDate = checkInvalidDate;
-exports.monthFormatCorrector = monthFormatCorrector;
-exports.dynamicMonthLength = dynamicMonthLength;
-exports.timeFormatLocaleCorrector = timeFormatLocaleCorrector;
 exports.CALENDAR_ERROR_MESSAGES = void 0;
 
 var _moment = _interopRequireDefault(require("moment"));
 
 var _lodash = _interopRequireDefault(require("lodash"));
-
-var _utils = require("./utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -132,7 +121,7 @@ function checkInvalidDate(value, format, minDate, maxDate) {
   var isValidDate = date.isValid();
 
   if (!isValidDate) {
-    var delimeters = value.match(/[^a-z0-9а-яё\u00C0-\u017F_]+/gi);
+    var delimeters = value.match(/[^a-z0-9_]/gi);
     var delimetersRegEx = new RegExp(delimeters.join('|'), 'gi');
     var inputParts = value.replace(/_*/gi, '').split(delimetersRegEx);
     var formatParts = format[1] ? format[1].split(delimetersRegEx) : format[0].split(delimetersRegEx);
@@ -194,64 +183,4 @@ function checkInvalidDate(value, format, minDate, maxDate) {
   }
 
   return buildResponse('', true);
-}
-/**
- * If date format has long or shorthand months it generates format for numeric too.
- *
- * @param {String} format
- *   The format dste string.
- * * @return {[String]}
- */
-
-
-function monthFormatCorrector(format) {
-  var momentFormat = [(0, _utils.convertFormatToMoment)(format)];
-
-  if (momentFormat[0].match(/M{3,}/g)) {
-    momentFormat.push(momentFormat[0].replace(/M{3,}/g, 'MM'));
-  }
-
-  return momentFormat;
-}
-/**
- * Compares the entered month with an array of months.
- *
- * @param {String} value
- *   The entered month.
- * @param {[String]} monthsArray
- *   The array of months.
- * * @return {Number}
- */
-
-
-function dynamicMonthLength(value, monthsArray) {
-  var lowerValue = value.toLowerCase();
-
-  var comparedMonth = _lodash.default.find(monthsArray, function (month) {
-    return month.toLowerCase().startsWith(lowerValue);
-  });
-
-  if (comparedMonth) {
-    return comparedMonth.length;
-  }
-
-  return 0;
-}
-/**
- * Corrects the time format depending on locale.
- *
- * @param {Boolean} is24hours
- *   The value from locale settings.
- * @param {String} format
- *   The format from settings.
- * * @return {String}
- */
-
-
-function timeFormatLocaleCorrector(is24hours, format) {
-  if (is24hours && format.match(/[ha]/g)) {
-    return format.replace(/h/g, 'H').replace(/a/g, '').trim();
-  }
-
-  return format;
 }

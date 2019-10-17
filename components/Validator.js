@@ -24,6 +24,8 @@ require("core-js/modules/es.string.iterator");
 
 require("core-js/modules/es.string.match");
 
+require("core-js/modules/es.string.replace");
+
 require("core-js/modules/es.string.split");
 
 require("core-js/modules/web.dom-collections.iterator");
@@ -137,6 +139,14 @@ var _default = {
       check: function check(component, setting, value) {
         if (!(0, _utils.boolValue)(setting)) {
           return true;
+        }
+
+        var isCalendar = component.validators.some(function (validator) {
+          return validator === 'calendar';
+        });
+
+        if (!value && isCalendar && component.widget.enteredDate) {
+          return !this.validators.calendar.check.call(this, component, setting, value);
         }
 
         return !component.isEmpty(value);
@@ -537,39 +547,27 @@ var _default = {
         return date.isAfter(minDate) || date.isSame(minDate);
       }
     },
-    strictDateValidation: {
-      key: 'validate.strictDateValidation',
+    calendar: {
+      key: 'validate.calendar',
       messageText: '',
       message: function message(component) {
-        return component.t(component.errorMessage(this.validators.strictDateValidation.messageText), {
+        return component.t(component.errorMessage(this.validators.calendar.messageText), {
           field: component.errorLabel,
           maxDate: (0, _moment.default)(component.dataValue).format(component.format)
         });
       },
       check: function check(component, setting, value) {
-        this.validators.strictDateValidation.messageText = '';
+        this.validators.calendar.messageText = '';
+        var _component$_widget = component._widget,
+            settings = _component$_widget.settings,
+            enteredDate = _component$_widget.enteredDate;
+        var minDate = settings.minDate,
+            maxDate = settings.maxDate,
+            format = settings.format;
+        var momentFormat = [(0, _utils.convertFormatToMoment)(format)];
 
-        if (!component.widgetData) {
-          return true;
-        }
-
-        var _component$widgetData = component.widgetData,
-            minDate = _component$widgetData.minDate,
-            maxDate = _component$widgetData.maxDate,
-            format = _component$widgetData.format,
-            enteredDate = _component$widgetData.enteredDate;
-        var momentFormat = (0, _calendarUtils.monthFormatCorrector)(format);
-
-        if (component.widgetLocale) {
-          var _component$widgetLoca = component.widgetLocale,
-              locale = _component$widgetLoca.locale,
-              monthsShort = _component$widgetLoca.monthsShort,
-              monthsShortStrictRegex = _component$widgetLoca.monthsShortStrictRegex;
-
-          _moment.default.updateLocale(locale, {
-            monthsShort: monthsShort,
-            monthsShortStrictRegex: monthsShortStrictRegex
-          });
+        if (momentFormat[0].match(/M{3,}/g)) {
+          momentFormat.push(momentFormat[0].replace(/M{3,}/g, 'MM'));
         }
 
         if (!value && enteredDate) {
@@ -578,14 +576,14 @@ var _default = {
               result = _checkInvalidDate.result;
 
           if (!result) {
-            this.validators.strictDateValidation.messageText = message;
+            this.validators.calendar.messageText = message;
             return result;
           }
         }
 
         if (value && enteredDate) {
           if ((0, _moment.default)(value).format() !== (0, _moment.default)(enteredDate, momentFormat, true).format() && enteredDate.match(/_/gi)) {
-            this.validators.strictDateValidation.messageText = _calendarUtils.CALENDAR_ERROR_MESSAGES.INCOMPLETE;
+            this.validators.calendar.messageText = _calendarUtils.CALENDAR_ERROR_MESSAGES.INCOMPLETE;
             return false;
           } else {
             component._widget.enteredDate = '';

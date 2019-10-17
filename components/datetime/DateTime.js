@@ -35,7 +35,7 @@ var _lodash = _interopRequireDefault(require("lodash"));
 
 var _moment = _interopRequireDefault(require("moment"));
 
-var _WidgetComponent2 = _interopRequireDefault(require("../_classes/widgetcomponent/WidgetComponent"));
+var _Input2 = _interopRequireDefault(require("../_classes/input/Input"));
 
 var _utils = _interopRequireDefault(require("../../utils"));
 
@@ -65,8 +65,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 var DateTimeComponent =
 /*#__PURE__*/
-function (_WidgetComponent) {
-  _inherits(DateTimeComponent, _WidgetComponent);
+function (_Input) {
+  _inherits(DateTimeComponent, _Input);
 
   _createClass(DateTimeComponent, null, [{
     key: "schema",
@@ -75,7 +75,7 @@ function (_WidgetComponent) {
         extend[_key] = arguments[_key];
       }
 
-      return _WidgetComponent2.default.schema.apply(_WidgetComponent2.default, [{
+      return _Input2.default.schema.apply(_Input2.default, [{
         type: 'datetime',
         label: 'Date / Time',
         key: 'dateTime',
@@ -166,6 +166,11 @@ function (_WidgetComponent) {
       minDate: _lodash.default.get(_this.component, 'datePicker.minDate'),
       maxDate: _lodash.default.get(_this.component, 'datePicker.maxDate')
     };
+    /* eslint-enable camelcase */
+    // Add the validators date.
+
+    _this.validators.push('date');
+
     return _this;
   }
 
@@ -239,6 +244,6 @@ function (_WidgetComponent) {
   }]);
 
   return DateTimeComponent;
-}(_WidgetComponent2.default);
+}(_Input2.default);
 
 exports.default = DateTimeComponent;

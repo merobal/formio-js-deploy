@@ -419,7 +419,7 @@ function (_Webform) {
       } // Validate the form, before go to the next page
 
 
-      if (this.checkValidity(this.submission.data, true)) {
+      if (this.checkValidity(this.submission.data, true, true)) {
         this.checkData(this.submission.data);
         return this.beforePage(true).then(function () {
           return _this6.setPage(_this6.getNextPage()).then(function () {
@@ -599,13 +599,13 @@ function (_Webform) {
     }
   }, {
     key: "checkValidity",
-    value: function checkValidity(data, dirty) {
+    value: function checkValidity(data, dirty, currentPageOnly) {
       if (!this.checkCondition(null, data)) {
         this.setCustomValidity('');
         return true;
       }
 
-      var components = !this.isLastPage() ? this.currentPage.components : this.getComponents();
+      var components = !currentPageOnly || this.isLastPage() ? this.getComponents() : this.currentPage.components;
       return components.reduce(function (check, comp) {
         return comp.checkValidity(data, dirty) && check;
       }, true);
